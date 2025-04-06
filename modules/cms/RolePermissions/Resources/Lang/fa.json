@@ -1,0 +1,33 @@
+{
+    "manage role_permissions" : "مدیریت نقشهای کاربری",
+    "blog manager" : "مدیریت وبلاگ",
+    "shop manager" : "مدیریت فروشگاه",
+    "comment manager" : "مدیریت نظرات",
+    "page manager" : "مدیریت برگه ها",
+    "contact manager" : "مدیریت ورودی تماس با ما",
+    "newsletter manager" : "مدیریت خبرنامه ها",
+    "menu manager" : "مدیریت منو",
+    "attribute manager" : "مدیریت ویژگی محصولات",
+    "tag manager" : "مدیریت برچسب ها",
+    "category manager" : "مدیریت دسته بندی ها",
+
+    "manage users" : "مدیریت کاربران",
+    "affiliate wait for confirm" : "بازاریاب منتظر تایید",
+    "super admin" : "مدیرکل",
+
+    "operator" : "اپراتور",
+    "user" : "کاربر",
+    "team leader" : "سر تیم",
+    "technical engineer" : "مهندس فنی",
+    "financial manager" : "مدیر مالی",
+    "worker" : "متخصص",
+    "affiliate" : "بازاریاب",
+    "show manager" : "مدیریت تنظیمات قالب و نمایش",
+    "content manager" : "مدیر تولید محتوا",
+    "seo manager" : "مدیر سئو ",
+    "teacher" : "مدرس",
+    "submit teacher" : "مدرس نپذیرفته شده",
+    "teach" : "تدریس",
+    "manage own courses" : "مدیریت دوره های خود",
+    "submit teach" : "مدرس نپذیرفته شده"
+}

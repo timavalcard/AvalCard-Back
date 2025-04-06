@@ -1,0 +1,10 @@
+{
+    "fail" : "خطا",
+    "success" : "موفق",
+    "pending" : "پردازش",
+    "canceled" : "کنسل شده",
+    "rejected" : "رد شده",
+    "settled" : "تسویه شده",
+    "cash" : "نقدی",
+    "nextpay" : "نکست‌ پی"
+}

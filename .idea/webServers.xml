@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="127a47bb-fd90-47e4-9177-aa3445d30c7a" name="vmpc.ir" url="http://vmpc.ir">
+        <fileTransfer host="vmpc.ir" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="ed6ea629-6bfc-4a62-9f0b-b0c6cb7d7115" name="foroshgahplus.ir" url="https://salikam.com">
+        <fileTransfer host="157.90.199.42" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="447c4860-ba7b-4b15-9d63-560020c89d6f" name="forosh" url="http://5.9.42.254">
+        <fileTransfer accessType="FTPS" host="5.9.42.254" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="a232de75-c363-4203-b6e6-8c17a4b2580a" name="ghasedakset.com" url="https://ghasedakset.com">
+        <fileTransfer host="ghasedakset.com" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="fee38f51-9b94-495e-bc0d-c40d74b19d34" name="foroshgahplus" url="http://foroshgahplus.ir">
+        <fileTransfer host="foroshgahplus.ir" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="26678963-b853-41d2-8ca9-8a7287dbf5be" name="foroshgahgram.ir" url="http://foroshgahgram.ir">
+        <fileTransfer host="foroshgahgram.ir" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+    <groups>
+      <group>
+        <name>laravel</name>
+      </group>
+    </groups>
+  </component>
+</project>
