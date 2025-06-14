@@ -19,8 +19,12 @@ class ProductAttrRepository
         return Attribute::query()->where("product_type",$product_type)->get();
     }
 
-    public static function get_children_attr($attribute)
+    public static function get_children_attr($attribute,$name=null)
     {
+        if($name){
+            return $attribute->sub_attr()->where("name","LIKE","%".$name."%")->get();
+        }
+
         return $attribute->sub_attr;
     }
     public static function get_children_attr_by_id($attribute,$id)

@@ -11,16 +11,24 @@ namespace CMS\Transaction\Repository;
 
 use CMS\Comment\Models\Comment;
 use CMS\Transaction\Models\Transaction;
+use CMS\Wallet\Models\Wallet;
 
 class TransactionRepository
 {
 
     public static function create($data,$transactionable)
     {
+        if($transactionable instanceof Wallet){
+            $status="failed";
+        } else{
+            $status="pending";
+        }
+
         return $transactionable->transaction()->create([
             "user_id"=>$data["user_id"],
             "transaction_id"=>$data["transaction_id"],
             "price"=>$data["price"],
+            "status"=>$status,
             "gateway"=>$data["gateway"],
         ]);
     }
@@ -31,7 +39,7 @@ class TransactionRepository
     }
 
     public static function get_transactions_by_type($type,$paginate=true){
-        $query=Transaction::query()->where("transactionable_type",$type)->with("transactionable");
+        $query=Transaction::query()->where("transactionable_type",$type)->with("transactionable")->orderByDesc("created_at");
         if($paginate){
             return $query->paginate(15);
         }
@@ -56,6 +64,7 @@ class TransactionRepository
     {
         $transactionable->update([
             "status"=>$status,
+
         ]);
     }
 }

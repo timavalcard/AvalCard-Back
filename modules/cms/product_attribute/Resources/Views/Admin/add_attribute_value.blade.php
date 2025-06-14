@@ -89,7 +89,10 @@
     </div>
 
     <div class="col-lg-8">
-
+        <form action="" class="d-flex align-items-center">
+            <input style="border-radius: 10px;" type="text" name="name" placeholder="جستجوی مقدار...">
+            <button class="btn-blue mr-2">جستجو</button>
+        </form>
         <table class="admin-table final-table">
 
             <tr>

@@ -336,7 +336,7 @@
 
 
                                     <span>
-                            فروشنده: فروشگاه هیدی لیدی
+                            فروشنده: فروشگاه اول کارت
                         </span>
                                 </div>
                                 <div class="product-description-boxes-top-item">
@@ -376,7 +376,7 @@
                                 @if($in_stock)
 
                                         <span>
-                                            موجود در انبار هیدی لیدی
+                                            موجود در انبار اول کارت
                                         </span>
                                     @else
                                         <span>

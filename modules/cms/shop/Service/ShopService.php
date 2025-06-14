@@ -31,10 +31,12 @@ class ShopService
        return Payment::via($gateway_name)->purchase(
            $invoice,
            function($driver, $transactionId) use($order,$amount,$gateway_name) {
+
                $data=[];
                $data["price"]=$amount;
-               $data["transaction_id"]=$transactionId;
-               $data["user_id"]=auth()->id();
+               $data["transaction_id"]=(string) $transactionId;
+               $data["transaction_holder"]=(string) $transactionId;
+               $data["user_id"]=request()->user()->id;
                $data["gateway"]=$gateway_name;
                TransactionRepository::create($data,$order);
            }
@@ -79,6 +81,7 @@ class ShopService
 
    public static function get_order_total_price($decrease_wallet=true,$products=null){
        $amount=ProductService::get_cart_products_total_price(false,$products);
+       $amount=$amount["total_price"];
        $total_price=ShopService::add_delivery_price_to_amount($amount);
        if($decrease_wallet) $total_price=WalletService::decrease_wallet_from_amount($total_price);
         $total_price=ClubService::decrease_club_from_amount($total_price);
@@ -91,14 +94,16 @@ class ShopService
        if(is_object($transactionable)){
            if ($transactionable instanceof Order && !$transactionable->is_course){
                CommonService::tel_bot("order_add",$transactionable->id);
-               return redirect()->route("shop.checkout_received",["id"=>$transactionable->id]);
+               return redirect()->away(env("FRONT_URL")."/panel/orders/".$transactionable->id."/?success=true");
+
            } elseif($transactionable instanceof Order && $transactionable->is_course){
                toastMessage("پرداخت با موفقیت انجام شد و دوره برای شما اضافه شد");
 
                return redirect()->route("home");
            } elseif ($transactionable instanceof Wallet ){
                toastMessage("پرداخت با موفقیت انجام شد و موجودی کیف پول شما افزایش پیدا کرد.");
-               return redirect()->route("user.wallet");
+               return redirect()->away(env("FRONT_URL")."/panel/wallet?success=true");
+
            }
        }
        toastMessage("پرداخت با موفقیت انجام شد.");
@@ -109,34 +114,26 @@ class ShopService
         toastMessage($message,"خطایی رخ داد","error");
         if(is_object($transactionable)){
             if ($transactionable instanceof Order && !$transactionable->is_course){
-                ShopService::clear_cart();
-                return redirect()->route("user.order",["id"=>$transactionable->id]);
+                ShopService::clear_cart($transactionable->user);
+                return redirect()->away(env("FRONT_URL")."/panel/orders/".$transactionable->id."/?fail=true");
+
             } elseif($transactionable instanceof Order && $transactionable->is_course){
 
                 return redirect()->route("cart.index");
             } elseif ($transactionable instanceof Wallet ){
-                return redirect()->route("user.wallet");
+                return redirect()->away(env("FRONT_URL")."/panel/wallet?fail=true");
+
             }
         }
 
         return redirect()->route("home");
     }
-    public static function clear_cart(){
-        $total_price=ShopService::get_order_total_price(false);
-        $wallet_decreased=(integer) WalletService::decreasing_wallet_amount($total_price,false);
-        $club_decreased=(integer) ClubService::decreasing_club_amount($total_price,false);
-        session()->forget("cart");
-        if($user_cart=auth()->user()->cart()){
+    public static function clear_cart($user){
+
+        if($user_cart=$user->cart){
             $user_cart->delete();
         }
 
-
-        if($wallet_decreased){
-            WalletService::clear_using_wallet($wallet_decreased);
-        }
-        if($club_decreased){
-            ClubService::clear_using_club($club_decreased);
-        }
     }
 
     public static function create_order_factor($amount,$cart,$cart_products){
@@ -150,12 +147,17 @@ class ShopService
         foreach($cart as $parent2_cart_product) {
             foreach ($parent2_cart_product as $parent_cart_product) {
                 $product = $cart_products->where("id", $parent_cart_product["id"])->first();
+                $variations="";
+                if(isset($parent_cart_product["variation"])){
+                    $variations=$product->get_variation_by_value($parent_cart_product["variation"]);
+                }
                 $factor["products"][$product->id]=[
                     "id"=>$product->id,
                     "title"=>$product->title,
                     "price"=>$product->product_price_with_quantity($parent_cart_product["quantity"],$parent_cart_product["variation"]),
                     "quantity"=>$parent_cart_product["quantity"],
                     "variation"=>$parent_cart_product["variation"],
+                    "variations"=>$variations,
                 ];
             }
         }

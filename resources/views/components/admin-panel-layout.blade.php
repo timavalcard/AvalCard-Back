@@ -89,48 +89,124 @@
                             </a>
                         </li>
 
+                        @php
+                            $currentUrl = url()->current(); // آدرس بدون کوئری
+                            $currentQuery = request()->query(); // آرایه‌ی کوئری
+                        @endphp
+
                         @foreach(config("AdminSidebar") as $configItem)
-                            @if(!array_key_exists("permission",$configItem)
-                             ||  (is_array($configItem["permission"]) && auth()->user()->hasAnyPermission($configItem["permission"])) || (!is_array($configItem["permission"]) && auth()->user()->hasPermissionTo($configItem["permission"]))
-                             || auth()->user()->hasPermissionTo(\CMS\RolePermissions\Models\Permission::PERMISSION_SUPER_ADMIN)
-                             )
-                                @php($active_li_class="")
+                            @if(
+                                !array_key_exists("permission", $configItem) ||
+                                (is_array($configItem["permission"]) && auth()->user()->hasAnyPermission($configItem["permission"])) ||
+                                (!is_array($configItem["permission"]) && auth()->user()->hasPermissionTo($configItem["permission"])) ||
+                                auth()->user()->hasPermissionTo(\CMS\RolePermissions\Models\Permission::PERMISSION_SUPER_ADMIN)
+                            )
+                                @php
+                                    $active_li_class = "";
+                                    $configLinkUrl = strtok($configItem["link"], '?');
+                                    $configLinkQuery = [];
+                                    parse_str(parse_url($configItem["link"], PHP_URL_QUERY), $configLinkQuery);
 
-                                @if(str_contains(url()->full(),$configItem["link"]) || url()->full()==$configItem["link"])
+                                    // اول چک والد
+                                    if($currentUrl == $configLinkUrl && empty(array_diff_assoc($configLinkQuery, $currentQuery))) {
+                                        $active_li_class = "menu-open";
+                                    }
 
-                                    @php($active_li_class="menu-open")
-                                @endif
-                                @if(!empty($configItem["children"]))
-                                    @foreach($configItem["children"] as $children)
-                                        @if(str_contains(url()->full(),$children["link"]))
-                                            @php($active_li_class="menu-open")
-                                        @endif
-                                    @endforeach
-                                @endif
-                                <li class="nav-item has-treeview {{ $active_li_class }} ">
+                                    // بعد چک بچه‌ها
+                                    $childIsActive = false;
+                                    if(!empty($configItem["children"])) {
+                                        foreach($configItem["children"] as $children) {
+                                            $childLinkUrl = strtok($children["link"], '?');
+                                            $childLinkQuery = [];
+                                            parse_str(parse_url($children["link"], PHP_URL_QUERY), $childLinkQuery);
+
+                                            if($currentUrl == $childLinkUrl && empty(array_diff_assoc($childLinkQuery, $currentQuery))) {
+                                                $childIsActive = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if($childIsActive) {
+                                        $active_li_class = "menu-open";
+                                    }
+                                @endphp
+
+                                <li class="nav-item has-treeview {{ $active_li_class }}">
                                     <a href="{{ $configItem["link"] }}" class="nav-link {{ $active_li_class ? 'active' : '' }}">
-                                        <i class="fa {{  $configItem["icon"] }}" aria-hidden="true"></i>
+
+                                        <i class="fa {{  $configItem["icon"] }}"></i>
                                         <p>
-                                            {{  $configItem["name"] }}
+                                            {{ $configItem["name"] }}
                                             <i class="right fa fa-angle-left"></i>
                                         </p>
-                                    </a>
-                                    @if(!empty($configItem["children"]))
 
+                                        @if($configItem["name"] == "مدیریت تیکت ها" )
+                                            @php
+                                                $unreadCount = \CMS\Ticket\Models\Ticket::query()->where("status", "در حال بررسی")->count();
+                                            @endphp
+                                            @if($unreadCount > 0)
+                                                <span style="background: #3664ff;
+    color: #fff;
+    width: 18px;
+    height: 18px;
+    margin-right: 9px;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 12px;
+    text-align: center;
+    line-height: 20px;">{{ $unreadCount }}</span>
+                                            @endif
+                                        @endif
+                                        @if($configItem["name"] == "درخواست احراز هویت" )
+                                            @php
+                                                $unreadCount = CMS\User\Repositories\UserRepository::get_users_meta_equal_to("authorize_status","pending")->count();
+                                            @endphp
+                                            @if($unreadCount > 0)
+                                                <span style="background: #3664ff;
+    color: #fff;
+    width: 18px;
+    height: 18px;
+    margin-right: 9px;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 12px;
+    text-align: center;
+    line-height: 20px;">{{ $unreadCount }}</span>
+                                            @endif
+                                        @endif
+                                    </a>
+
+                                    @if(!empty($configItem["children"]))
                                         <ul class="nav nav-treeview">
                                             @foreach($configItem["children"] as $children)
-                                                <li class="nav-item ">
-                                                    <a href="{{ $children["link"] }}" class="nav-link @if(url()->full()==$children["link"]) children-active @endif" >
+                                                @php
+                                                    $childLinkUrl = strtok($children["link"], '?');
+                                                    $childLinkQuery = [];
+                                                    parse_str(parse_url($children["link"], PHP_URL_QUERY), $childLinkQuery);
+
+                                                    $childActive = ($currentUrl == $childLinkUrl && empty(array_diff_assoc($childLinkQuery, $currentQuery)));
+                                                @endphp
+                                                <li class="nav-item">
+                                                    <a href="{{ $children["link"] }}" class="nav-link {{ $childActive ? 'children-active' : '' }}">
                                                         <i class="fa fa-circle-o nav-icon"></i>
                                                         <p>{{ $children["name"] }}</p>
                                                     </a>
                                                 </li>
+
+
                                             @endforeach
                                         </ul>
                                     @endif
                                 </li>
                             @endif
                         @endforeach
+
+
                         <li class="nav-item has-treeview">
                             <a href="{{ route("admin_edit_user", ["id" => auth()->id()]) }}"
                                class="nav-link ">
@@ -193,7 +269,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>                @endif
-                <a href="/" class="btn-blue return_home">بازگشت به سایت
+                <a href="{{ env("FRONT_URL") }}" class="btn-blue return_home">بازگشت به سایت
                     <i class="fa fa-angle-left"> </i>
                 </a>
             {{$main ?? ''}}

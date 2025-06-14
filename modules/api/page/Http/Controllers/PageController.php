@@ -22,21 +22,30 @@ class PageController extends Controller
     public function addFormEntrance(Request $request){
 
         if ($request->form_id==1){
-            $data=json_encode([
+
+            $data=[
                 [
-                    "label"=>"نام و نام خانوادگی",
-                    "value"=>$request->input_1,
+                    "label"=>"نام",
+                    "value"=>$request->name,
+                ],
+                [
+                    "label"=>"ایمیل",
+                    "value"=>$request->email,
                 ],
                 [
                     "label"=>"تلفن همراه",
-                    "value"=>$request->input_10,
+                    "value"=>$request->phone,
                 ],
-
+                [
+                    "label"=>"بخش",
+                    "value"=>$request->unit,
+                ],
                 [
                     "label"=>"توضیح",
-                    "value"=>$request->input_5,
+                    "value"=>$request->message,
                 ],
-            ]);
+            ];
+
             $form=FormsRepository::find(1);
         }
         FormsRepository::add_entrance($form,$data);

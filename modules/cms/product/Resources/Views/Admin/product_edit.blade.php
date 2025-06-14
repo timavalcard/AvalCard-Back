@@ -36,7 +36,10 @@
                                placeholder="نامک را وارد کنید">
                     </p>
                     <p class="mt-2">
-                        <a href="{{ $product->url }}" class="btn text-white btn-primary">نمایش محصول</a>
+                        <a target="_blank" href="{{ $product->url }}" class="btn text-white btn-primary">نمایش در پنل کاربری</a>
+                        @if(isset($product->category[0]))
+                            <a target="_blank" href="https://avalcard.com/gift-card/{{$product->category[0]->slug}}/{{$product->slug}}" class="btn text-white btn-primary mr-2">نمایش در سایت</a>
+                        @endif
                     </p>
 
                     <div class="admin-metabox-item metabox-close open">
@@ -75,7 +78,7 @@
                                     <li><a data-toggle="tab" href="#asli">مشخصات اصلی</a></li>
                                     <li><a data-toggle="tab" href="#vizhegi">ویژگی‌ها</a></li>
                                     <li class="for-variable li-for-variable-tab @if($product->type != "variable") d-none @endif "><a data-toggle="tab" href="#variable">متغیر ها</a></li>
-                                    <li class="for-sample @if($product->type == "variable") d-none @endif"><a data-toggle="tab" href="#anbar">انبار</a></li>
+                                   {{-- <li class="for-sample @if($product->type == "variable") d-none @endif"><a data-toggle="tab" href="#anbar">انبار</a></li>--}}
                                 </ul>
 
 
@@ -102,16 +105,20 @@
 
 
                                         </div>
-                                        <p class="mt-2">
+                                        <p class="mt-2 d-none">
                                             <label style="width: 23%">تعداد خریداران محصول : </label>
                                             <input type="text" class="w-50" name="buyer_count" value="{{  $product->buyer_count  }}">
+                                        </p>
+                                        <p>
+                                            <input type="text" name="time_to_send" class="mt-3" value="{{ $product->time_to_send }}"
+                                                   placeholder="مدت زمان تحویل">
                                         </p>
 
                                     </div>
                                     <div id="vizhegi" class="admin-product-list-content-item tab-pane fade in  " >
                                         <div class="vizhegi-select-box mb-3 d-flex align-items-center">
                                             <select class="p-1 vizhegi-select w-50 mb-0">
-                                                <option id="vizhegi-new" value="vizhegi-new" selected>افزودن ویژگی جدید</option>
+                                                <option id="" value="" >انتخاب ویژگی</option>
                                                 @foreach($attributes as $attribute)
                                                     <option value="{{ $attribute->id }}" >{{ $attribute->name }}</option>
                                                 @endforeach
@@ -184,7 +191,7 @@
 
                                                 @foreach($productVariations as $productVariation)
 
-                                                    <div class="variable-item">
+                                                    <div class="variable-item open">
                                                         <input type="hidden" value="{{ $index }}" name="variation_priority[variation_{{ $productVariation["id"] }}]" class="variation_priority">
                                                         <section class="variable-item-top">
                                                             <div class="variable-item-top-right">
@@ -276,7 +283,7 @@
 
 
 
-                                                                    <div class="manage-stock-number">
+                                                                    <div class="manage-stock-number  d-none">
                                                                         <p>
                                                                             <label for="">تعداد موجود در انبار.</label>
                                                                             <input type="text" name="variable_stock_number[variation_{{ $productVariation["id"] }}]" value="{{$productVariation["stock_number"]}}" >
@@ -333,7 +340,7 @@
                     </div>
                     <div class="admin-metabox-item metabox-close">
                         <div class="admin-metabox-item-title">
-                            <h5>توضیحات کوتاه محصول</h5>
+                            <h5>نکات قبل از خرید</h5>
                             <span class="admin-metabox-item-btn-up">
                             <i class="fa fa-angle-up"></i>
                         </span>
@@ -343,6 +350,181 @@
 
                         </textarea>
                         </p>
+                    </div>
+
+
+                    <div class="admin-metabox-item metabox-close open">
+                        <div class="admin-metabox-item-title">
+                            <h5>سوالات متداول</h5>
+                            <span  class="admin-metabox-item-btn-up">
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                        </div>
+                        <div class="col-12 form-item">
+                            <div id="faq-wrapper">
+                                @php($oldFAQ = old('faq',$product->faq))
+
+
+                                @if (empty($oldFAQ))
+                                    <div class="service-item">
+                                        <div class="service-item-header">
+                                            <input type="text" name="faq[0][title]" placeholder="عنوان سوال">
+                                            <button type="button" class="remove-faq">حذف</button>
+                                        </div>
+                                        <textarea name="faq[0][description]" placeholder="جواب سوال"></textarea>
+                                    </div>
+                                @else
+                                    @foreach ($oldFAQ as $index => $service)
+                                        <div class="service-item">
+                                            <div class="service-item-header">
+                                                <input type="text" name="faq[{{$index}}][title]" value="{{ $service->title??"" }}" placeholder="عنوان سوال">
+                                                <button type="button" class="remove-faq">حذف</button>
+                                            </div>
+                                            <textarea name="faq[{{$index}}][description]" placeholder="جواب سوال">{{ $service->description??"" }}</textarea>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                <button type="button" id="add-faq">افزودن سوال</button>
+                            </div>
+                            <style>
+                                #addresses-wrapper {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 10px;
+                                    max-width: 600px;
+                                    margin: 10px 0 30px;
+                                    padding: 20px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 8px;
+                                    background-color: #f9f9f9;
+                                }
+                                .address-item {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    align-items: center;
+                                    gap: 10px;
+                                }
+                                .address-item input,
+                                .address-item textarea,
+                                .address-item select {
+                                    flex: 1;
+                                    padding: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                }.address-item input, .address-item textarea, .address-item select {
+                                     display: block !important;
+                                     width: 100% !important;
+                                     flex: 0 0 100%;
+                                 }
+                                .remove-address {
+                                    background-color: #ff4d4d;
+                                    color: white;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                .remove-address:hover {
+                                    background-color: #cc0000;
+                                }
+                                #add-address {
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                #add-address:hover {
+                                    background-color: #45a049;
+                                }
+                                button#add-faq, button.remove-faq,button#add-service, button.remove-service ,#add-address,button.remove-address{
+                                    padding: 19px;
+                                }
+                                #services-wrapper,#faq-wrapper {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 10px;
+                                    max-width: 600px;
+                                    margin: 10px 0 30px;
+
+                                    padding: 20px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 8px;
+                                    background-color: #f9f9f9;
+                                }
+                                .service-item {
+                                    display: grid;
+                                    gap: 5px
+                                }
+
+                                .service-item .service-item-header {
+                                    align-items: center;
+                                    gap: 10px;
+                                    display: flex;
+                                }
+                                .service-item input {
+                                    flex: 1;
+                                    padding: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                }
+                                .remove-service,.remove-faq  {
+                                    background-color: #ff4d4d;
+                                    color: white;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                .remove-service:hover,.remove-faq:hover {
+                                    background-color: #cc0000;
+                                }
+                                #add-service ,#add-faq{
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                #add-service:hover,#add-faq:hover {
+                                    background-color: #45a049;
+                                }
+                            </style>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    document.getElementById("add-faq").addEventListener("click", function () {
+                                        let newService = document.createElement("div");
+                                        let count = document.getElementById("faq-wrapper").children.length;
+
+                                        newService.classList.add("service-item");
+                                        newService.innerHTML = '<div class="service-item-header">' +
+                                            `<input type="text" name="faq[${count}][title]" placeholder="عنوان سوال">` +
+                                            '<button type="button" class="remove-faq">حذف</button>' +
+                                            '</div>' +
+                                            `<textarea name="faq[${count}][description]" placeholder="جواب سوال" />`;
+                                        document.getElementById("add-faq").before(newService);
+                                    });
+
+                                    document.getElementById("faq-wrapper").addEventListener("click", function (e) {
+                                        if (e.target.classList.contains("remove-faq")) {
+                                            e.target.closest('div.service-item').remove();
+                                        }
+                                    });
+                                });
+
+
+
+
+
+
+
+                            </script>
+
+                        </div>
                     </div>
 
                     <div class="admin-metabox-item metabox-close open">
@@ -404,13 +586,13 @@
                         </div>
                     </div>
                     <div class="admin-metabox-item metabox-close">
-                        <div class="admin-metabox-item-title"><h5>درصد بازاریاب</h5>                        <span
+                        <div class="admin-metabox-item-title"><h5>درصد کارمزد</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
                         <div class="col-12 form-item">
 
-                            <input type="number" name='affiliate_percent' min="0" max="100" class="mt-3" value="{{ $product->affiliate_percent }}"
+                            <input type="number" name='fee_percent' min="0" max="100" class="mt-3" value="{{ $product->fee_percent }}"
                                    placeholder="درصد را وارد کنید">
-                            <span class="font-italic mt-3 mb-4 d-block">چند درصد از قیمت این محصول به بازاریاب تعلق میگیرد؟</span>
+                            <span class="font-italic mt-3 mb-4 d-block"></span>
                         </div>
                     </div>
 
@@ -436,57 +618,12 @@
                                 </li>
                                 @endforeach
                                 </ul>
-                                <a class="btn btn-outline-primary d-inline-block m-3 btn-add-category"
-                                   href="#">افزودن دسته بندی تازه</a>
 
-                                <div class="form-add-category d-none">
-                                    <input type="hidden" value="product" name="category_post_type">
-
-                                    <p>
-
-                                        <label for="">نام دسته بندی : </label>
-
-                                        <input type="text" name="category_name" placeholder="نام ذسته بندی را وارد کنید" value="{{old("name")}}">
-
-                                    </p>
-
-                                    <p>
-
-                                        <label for="">نامک :</label>
-
-                                        <input type="text" name="category_slug" placeholder="نامک ذسته بندی را وارد کنید" value="{{old("slug")}}">
-
-                                        <span class="font-italic mt-3 mb-4 d-block">نامک نسخه لاتین واژه است که در نشانی‌ها (URLs)‌ استفاده می‌شود. برای نامگذاری فقط از حروف،‌ ارقام و خط تیره استفاده کنید. نمایش فقط با حروف کوچک خواهد بود.</span>
-
-                                    </p>
-                                    <p>
-
-                                        <label for=""> دسته والد :</label>
-
-                                        <select name="category_parent" id="">
-
-                                            <option value="0" selected>دسته اصلی</option>
-
-                                            @foreach($categories as $category)
-
-                                                <option  value="{{$category->id}}">{{ $category->name }}</option>
-
-                                            @endforeach
-
-                                        </select>
-
-                                    </p>
-
-
-                                    <p>
-                                        <button class="btn-blue btn-submit-category">افزودن دسته بندی</button>
-                                    </p>
-                                </div>
                         </div>
 
                     </div>
 
-                    <div class="admin-metabox-item metabox-close position-relative ">
+                    {{--<div class="admin-metabox-item metabox-close position-relative ">
 
                         <div class="admin-metabox-item-title">
                             <h5>برند محصول</h5>
@@ -504,7 +641,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    </div>
+                    </div>--}}
 
 
                     <div class="admin-metabox-item metabox-close">
@@ -528,7 +665,7 @@
 
 
 
-                    <div class="admin-metabox-item metabox-close">
+                   {{-- <div class="admin-metabox-item metabox-close">
                         <div class="admin-metabox-item-title"><h5>گالری تصاویر محصول</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
 
@@ -551,7 +688,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div>--}}
 
                 </div>
             </div>
@@ -614,6 +751,11 @@
         @endpush
 
         @push("admin-css")
+            <style>
+                .variable-item.open .variable-item-content {
+                    display: none;
+                }
+            </style>
             <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css" integrity="sha512-wJgJNTBBkLit7ymC6vvzM1EcSWeM9mmOu+1USHaRBbHkm6W9EgM0HY27+UtUaprntaYQJF75rc8gjxllKs5OIQ==" crossorigin="anonymous" />
             <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">

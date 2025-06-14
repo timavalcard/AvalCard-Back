@@ -442,11 +442,11 @@ class ProductRepository
         }
     }
 
-    public static function like($name=null,$num=12)
+    public static function like($name=null,$num=12,$type="gift_cart")
     {
         $products=collect();
         if($name){
-            $products=Product::query()->where("status","publish")->where("title","LIKE","%".$name."%")->paginate($num);
+            $products=Product::query()->where("status","publish")->where("product_type",$type)->where("title","LIKE","%".$name."%")->paginate($num);
         }
 
 

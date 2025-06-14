@@ -130,7 +130,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="admin-box">
+                   {{-- <div class="admin-box">
                         <div class="admin-box-title">
                             <strong>
                                 پر فروش ترین محصولات
@@ -197,7 +197,7 @@
 
                             </table>
                         </div>
-                    </div>
+                    </div>--}}
                 </div>
                 <div class="col-md-4">
                     <div class="admin-box">

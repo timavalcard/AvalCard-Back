@@ -3,6 +3,7 @@
 namespace CMS\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use CMS\Sms\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use CMS\Media\Http\Requests\UserAddMediaRequest;
@@ -177,6 +178,61 @@ class UserController extends Controller
 
 
     //admin functions
+
+    public function list_authorize(){
+        $users = UserRepository::get_users_meta_equal_to("authorize_status","pending");
+        $users_count=$users->count();
+        return view("User::Admin.authorize", ["users" => $users,"users_count"=>$users_count]);
+
+    }
+    public function list_authorized(){
+        $users = UserRepository::get_users_meta_equal_to("authorize_status","accept");
+        $users_count=$users->count();
+        return view("User::Admin.authorized", ["users" => $users,"users_count"=>$users_count]);
+
+    }
+    public function check_authorized($id)
+    {
+        $user = UserRepository::find($id);
+        return view("User::Admin.authorized_check", ["user" => $user]);
+    }
+    public function list_not_authorized(){
+        $users = UserRepository::get_users_meta_equal_to("authorize_status","decline");
+        $users_count=$users->count();
+        return view("User::Admin.not_authorized", ["users" => $users,"users_count"=>$users_count]);
+
+    }
+    public function check_not_authorized($id)
+    {
+        $user = UserRepository::find($id);
+        return view("User::Admin.not_authorized_check", ["user" => $user]);
+    }
+
+    public function check_authorize($id)
+    {
+        $user = UserRepository::find($id);
+        return view("User::Admin.authorize_check", ["user" => $user]);
+    }
+    public function decline_authorize($id,Request $request)
+    {
+        $user = UserRepository::find($id);
+        UserRepository::add_meta([["name" => "authorize_decline_reason", "value" => $request->reason]], $user);
+        UserRepository::add_meta([["name" => "authorize_status", "value" => "decline"]], $user);
+        if($user){
+            $result = SmsService::ultra('authorizeFalse', [$user->name. " ".$user->last_name], $user->mobile);
+        }
+        return redirect()->route("admin_list_authorize")->with(["success"=>"با موفقیت رد شد"]);
+    }
+    public function accept_authorize($id,Request $request)
+    {
+        $user = UserRepository::find($id);
+        UserRepository::add_meta([["name" => "authorize_status", "value" => "accept"]], $user);
+        if($user){
+            $result = SmsService::ultra('authorizeTrue', [$user->name. " ".$user->last_name], $user->mobile);
+        }
+        return redirect()->route("admin_list_authorize")->with(["success"=>"با موفقیت پذیرفته شد"]);
+    }
+
     public function list_user(Request $request)
     {
         $users = UserRepository::get_user_with_paginate(20,$request->name);
@@ -211,7 +267,9 @@ class UserController extends Controller
         $user = UserRepository::find($id);
         $roles= $roleRepo->all();
         $statuses=User::ACCOUNT_STATUSES;
-        return view("User::Admin.user_edit", ["user" => $user, "roles" => $roles,"statuses"=>$statuses]);
+        $profile_avatar_id=UserRepository::get_meta("profile_avatar",$user);
+
+        return view("User::Admin.user_edit", ["profile_avatar_id"=>$profile_avatar_id,"user" => $user, "roles" => $roles,"statuses"=>$statuses]);
     }
 
     public function edit_user(EditUserRequest $request)
@@ -224,6 +282,13 @@ class UserController extends Controller
         }
         $request->password=$pass;
         UserRepository::update($user,$request);
+        if (!empty($request->national_code)) {
+            UserRepository::add_meta([["name" => "national_code", "value" => $request->national_code]], $user);
+        }
+        if (!empty($request->thumbnail)) {
+            UserRepository::add_meta([["name" => "profile_avatar", "value" => $request->thumbnail]], $user);
+        }
+
         return back();
     }
 

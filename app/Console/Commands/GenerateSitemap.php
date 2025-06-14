@@ -49,7 +49,7 @@ class GenerateSitemap extends Command
         foreach ($posts as $post) {
             $sitemap->add($post->url."/");
         }
-        $sitemap->writeToFile(public_path('post-sitemap.xml'));
+        $sitemap->writeToFile(base_path('../public_html/public/post-sitemap.xml'));
 
         /*$posts = ArticleRepository::get_by_type(false);
         foreach ($posts as $post) {
@@ -67,28 +67,37 @@ class GenerateSitemap extends Command
 
             }
         }
-        $sitemap->writeToFile(public_path('page-sitemap.xml'));
+        $sitemap->writeToFile(base_path('../public_html/public/page-sitemap.xml'));
 
 
         $sitemap = Sitemap::create();
 
         $products = ProductRepository::getPublished();
         foreach ($products as $product) {
+            if($product->product_type == "gift_cart"){
+                $sitemap->add("https://avalcard.com/gift-cart/".$product->slug."/");
+            }elseif($product->product_type == "buy_product"){
+                $sitemap->add("https://avalcard.com/buy-deliver-iran/".$product->slug."/");
+            }elseif($product->product_type == "inter_payment"){
+                $sitemap->add("https://avalcard.com/foreign-payment/".$product->slug."/");
+            }else{
             $sitemap->add($product->url."/");
+
+            }
         }
-        $sitemap->writeToFile(public_path('product-sitemap.xml'));
+        $sitemap->writeToFile(base_path('../public_html/public/product-sitemap.xml'));
         $sitemap = Sitemap::create();
-        $categories = CategoryRepository::get();
+        /*$categories = CategoryRepository::get();
         foreach ($categories as $category) {
             $sitemap->add($category->url."/");
         }
-        $sitemap->writeToFile(public_path('category-sitemap.xml'));
+        $sitemap->writeToFile(public_path('category-sitemap.xml'));*/
 
         $sitemap = SitemapIndex::create();
-        $sitemap->add("https://hidi.com/post-sitemap.xml");
-        $sitemap->add("https://hidi.com/page-sitemap.xml");
-        $sitemap->add("https://hidi.com/product-sitemap.xml");
-        $sitemap->add("https://hidi.com/category-sitemap.xml");
-        $sitemap->writeToFile(public_path('sitemap_index.xml'));
+        $sitemap->add("https://avalcard.com/post-sitemap.xml");
+        $sitemap->add("https://avalcard.com/page-sitemap.xml");
+        $sitemap->add("https://avalcard.com/product-sitemap.xml");
+        //$sitemap->add("https://admin.avalcard.com/category-sitemap.xml");
+        $sitemap->writeToFile(base_path('../public_html/public/sitemap_index.xml'));
     }
 }

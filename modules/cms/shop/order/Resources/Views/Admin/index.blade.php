@@ -15,55 +15,96 @@
                 </div>
             </div>
         </div>
-        <div class="admin-table-content">
-            <form action="{{ route("admin_orders_group_action") }}" method="post">
-                <div class="admin-page-top">
-                    <p class="">تعداد کل : {{ $orders_count }} عدد </p>
-                    <div class="admin-filter-search mb-3">
-                        <form action="" class="d-flex align-items-center">
-                            <input style="border-radius: 10px;" type="text" name="name" placeholder="نام مورد نظر را وارد کنید...">
-                            <button class="btn-blue mr-2">
-                                <svg id="Group_126" data-name="Group 126" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path id="Path_143" data-name="Path 143" d="M0,0H24V24H0Z" fill="none"/>
-                                    <circle id="Ellipse_11" data-name="Ellipse 11" cx="7" cy="7" r="7" transform="translate(3 3)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                    <line id="Line_58" data-name="Line 58" x1="6" y1="6" transform="translate(15 15)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                </svg>
-
-                            </button>
-                        </form>
-                    </div>
+        <form method="GET" action="{{ route('admin_orders', ['order_type' => request()->order_type]) }}" class="mb-4">
+            <div class="row align-items-end">
+                {{-- تاریخ از --}}
+                <div class="col-md-3">
+                    <label for="from_date" class="form-label">از تاریخ</label>
+                    <input value="{{request()->from_date}}"  type="text" name="from_date" id="from_date" class="form-control datepicker" placeholder="مثلاً 1403/01/01"  autocomplete="off">
                 </div>
-                <div class="admin-order-select-box mt-3 justify-content-center">
+
+                <div class="col-md-3">
+                    <label for="to_date" class="form-label">تا تاریخ</label>
+                    <input value="{{request()->to_date}}" type="text" name="to_date" id="to_date" class="form-control datepicker" placeholder="مثلاً 1403/01/30"  autocomplete="off">
+                </div>
+
+
+                <div class="col-md-3">
+                    <label for="mobile" class="form-label">موبایل خریدار</label>
+                    <input value="{{request()->mobile}}" style="border-radius: 10px;" type="text" name="mobile" placeholder="جستجو بر اساس موبایل خریدار">
+                </div>
+
+                {{-- دکمه فیلتر --}}
+                <div class="col-md-3 d-grid">
+                    <input type="hidden" name="order_type" value="{{ request()->order_type }}">
+
+                    <button type="submit" class="btn btn-primary text-sm">اعمال فیلتر</button>
+                </div>
+            </div>
+        </form>
+
+
+        <div class="admin-table-content">
+            <div class="admin-page-top">
+                {{--<p class="">تعداد کل : {{ $orders_count }} عدد </p>--}}
+                <div class="admin-filter-search mb-3">
+
+                </div>
+            </div>
+            <form action="{{ route("admin_orders_group_action") }}" method="post">
+
+                {{--<div class="admin-order-select-box mt-3 justify-content-center">
                     <div class="admin-select-all-checkbox">
                         <select name="action">
-                            <option value="delete" selected="selected">حذف</option>
+                           --}}{{-- <option value="delete" selected="selected">حذف</option>--}}{{--
                             <option value="completed" >تکمیل شده</option>
                             <option value="cancelled" >لفو شده</option>
                             <option value="processing" >در حال انجام</option>
                         </select>
                         <button class="btn-outline-primary mr-3">اجرا</button>
                     </div>
-                </div>
+                </div>--}}
                 <div class="admin-order-by-box mt-3 mb-3">
+                    <label>فیلتر بر اساس وضعیت :</label>
 
-                    <label>فیلتر بر اساس وضعیت : </label>
-                    <a class=" btn btn-sm     @if(!isset(request()->status)) text-white  btn-dark @else btn-outline-dark @endif" href="{{ route("admin_orders") }}">همه سفارشات</a>
+                    {{-- لینک همه سفارشات (بدون status ولی با حفظ بقیه فیلترها) --}}
+                    <a class="btn btn-sm @if(!request()->has('status')) text-white btn-dark @else btn-outline-dark @endif"
+                       href="{{ request()->fullUrlWithQuery(['status' => null]) }}">
+                        همه سفارشات
+                    </a>
+
+                    {{-- لینک وضعیت‌های دیگر --}}
                     @foreach($statuses as $status)
-                        <a class=" btn btn-sm     @if($status==request()->status) text-white btn-dark @else btn-outline-dark @endif" href="{{ route("admin_orders",["status"=>$status]) }}">{{ __($status) }}</a>
+                        <a class="btn btn-sm @if(request()->status == $status) text-white btn-dark @else btn-outline-dark @endif"
+                           href="{{ request()->fullUrlWithQuery(['status' => $status]) }}">
+                            {{ __($status) }}
+                        </a>
                     @endforeach
                 </div>
 
-            @csrf
+
+                <div>
+                    <a class="btn btn-sm btn-success text-white mb-3"
+                       href="{{ route('exportOrders') . '?' . http_build_query(request()->query()) }}">
+                       گرفتن خروجی اکسل
+                    </a>
+
+                </div>
+
+
+                @csrf
 
                 <table class="admin-table final-table">
                 <tr>
-                    <th>
+                    {{--<th>
                         <input type="checkbox" class="admin-select-all-checkbox-btn">
-                    </th>
+                    </th>--}}
 
+                    <th>شناسه</th>
                     <th>خریدار</th>
                     <th>قیمت</th>
                     <th>وضعیت</th>
+                    <th>نوع پرداخت</th>
                     <th>تاریخ خرید</th>
                     <th></th>
                 </tr>
@@ -71,11 +112,11 @@
 
                     <tr>
                         <td>{{ $order->id }}
-                            <input type="checkbox" name="checkbox_item[]" value="{{ $order->id }}">
-
+                            {{--<input type="checkbox" name="checkbox_item[]" value="{{ $order->id }}">
+--}}
                         </td>
                         <td>
-                            @if($order->address["billing_first_name"])
+                            @if(isset($order->address["billing_first_name"]))
                                 {{ $order->address["billing_first_name"] ." ". $order->address["billing_last_name"] }}
                             @else
                                 {{ $order->user->name }}
@@ -85,7 +126,8 @@
                         </td>
                         <td>{{ $order->formated_price}}</td>
                         <td>{!!   $order->status_html !!}</td>
-                        <td>{{ toShamsi($order->created_at) }}</td>
+                        <td>{{ $order->payment_type }}</td>
+                        <td>{{ toShamsi($order->created_at,"Y/m/d H:i") }}</td>
                         <td class="icons">
                             <div class="admin-table-actions">
                                 <a title="نمایش و ویرایش" href="{{ route("admin_order_edit",["id"=>$order->id]) }}">
@@ -99,7 +141,7 @@
 
                                                     </span>
                                 </a>
-                                <a title="حذف" class="admin-table-actions-delete" href="{{ route("admin_delete_order",["id"=>$order->id]) }}">
+                               {{-- <a title="حذف" class="admin-table-actions-delete" href="{{ route("admin_delete_order",["id"=>$order->id]) }}">
                                                     <span>
                                                         <svg id="Group_69" data-name="Group 69" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
   <path id="Path_74" data-name="Path 74" d="M0,0H20V20H0Z" fill="none"/>
@@ -111,7 +153,7 @@
 </svg>
 
                                                     </span>
-                                </a>
+                                </a>--}}
                             </div>
                         </td>
                     </tr>
@@ -122,8 +164,25 @@
         </form>
         </div>
         <div class="admin-paginator">
-            {{ $orders->links() }}
+
+            {{ $orders->appends(request()->query())->links() }}
+
         </div>
+
+        @push("admin-scripts")
+            <script src="https://cdn.jsdelivr.net/npm/persian-date@latest/dist/persian-date.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
+
+            <script>
+                jQuery(".datepicker").persianDatepicker({
+                    format: 'YYYY/MM/DD',
+                    initialValue: false
+                });
+            </script>
+        @endpush
+
+
         @includeIf("admin.partials.delete_modal")
     </x-slot>
 </x-admin-panel-layout>

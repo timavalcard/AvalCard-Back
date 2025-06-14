@@ -2,7 +2,10 @@
 
 namespace API\Article\Http\Controllers;
 
+use API\Product\Http\Resources\ProductResource;
 use App\Http\Controllers\Controller;
+use CMS\Comment\Repository\CommentRepository;
+use CMS\Product\Repository\ProductRepository;
 use Illuminate\Http\Request;
 use API\Article\Http\Resources\ArticleResource;
 use CMS\Article\Models\Article;
@@ -27,7 +30,15 @@ class ArticleController extends Controller
     }
     public function search(){
         $articles=ArticleRepository::like(request()->title);
-        return ArticleResource::collection($articles);
+        $gift_carts=ProductRepository::like(request()->title,20,"gift_cart");
+        $buy_products=ProductRepository::like(request()->title,20,"buy_product");
+        $inter_payments=ProductRepository::like(request()->title,20,"inter_payment");
+        return [
+            "articles"=>ArticleResource::collection($articles),
+            "gift_carts"=>ProductResource::collection($gift_carts),
+            "buy_products"=>ProductResource::collection($buy_products),
+            "inter_payments"=>ProductResource::collection($inter_payments),
+        ];
     }
 
 
@@ -107,6 +118,15 @@ class ArticleController extends Controller
         if(!APIArticleRepository::is_ip_viewed($ipAddress,$request->article_id)){
             APIArticleRepository::add_article_view($request->article_id,$ipAddress);
         }
+    }
+
+    public function add_comment(Request $request){
+        $article=ArticleRepository::find($request->article_id);
+
+
+        $request->request->add(["post_type"=>"article","user_id"=>$request->user()->id,"parent_id"=>0,"post_id"=>$request->article_id,"type"=>"comment"]);
+        $comment=CommentRepository::create($request,0);
+        return $comment;
     }
 }
 

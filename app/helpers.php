@@ -111,11 +111,12 @@ function reportOrder(string $message = 'گزارش سفارش',array $id_watcher
     ];
 }
 
-function IR_TimestampToDate($timestamp,$format= 'H:i Y-n-j'){
+function IR_TimestampToDate($timestamp,$format= 'H:i Y/n/j'){
+    return \Morilog\Jalali\Jalalian::forge($timestamp)->format($format);
     return  $timestamp;
 }
 
-function IR_to_GR($data,$format= 'H:i Y-n-j'){
+function IR_to_GR($data,$format= 'H:i Y/n/j'){
     $explode = explode('-',$data);
     return implode('-',verta()->getGregorian($explode[0],$explode[1],$explode[2]));
 }
@@ -202,9 +203,9 @@ function store_image_link($media=null,$size="original"){
 function make_slug_for_data($title,$slug=null){
     if($slug==null){
 
-        $slug=Str::slug($title,"-","");
+        $slug=Str::slug($title,"-", 'fa');
     } else {
-        $slug=Str::slug($slug,"-","");
+        $slug=Str::slug($slug,"-", 'fa');
     }
     return $slug;
 }
@@ -234,21 +235,33 @@ function format_price_number($price){
 function format_price_with_currencySymbol($price, $symbol = "irr") {
     // تعریف آرایه‌ای از نمادهای ارزها
     $currencySymbols = [
-        "irr" => "تومان", // تومان ایران
-        "usd" => "$",  // دلار آمریکا
-        "eur" => "€",  // یورو
-        "gbp" => "£",  // پوند انگلیس
-        "jpy" => "¥",  // ین ژاپن
-        "cny" => "¥",  // یوان چین
-        "inr" => "₹",  // روپیه هند
-        // می‌توانید ارزهای دیگری را نیز اضافه کنید
+        "irr"     => "تومان",
+        "137203"  => "$",
+        "137204"  => "€",
+        "137205"  => "د.إ",
+        "137206"  => "£",
+        "137209"  => "¥",
+        "137211"  => "د.ك",
+        "137219"  => "A$",
+        "137220"  => "C$",
+        "137221"  => "¥",
+        "137224"  => "₺",
+        "137225"  => "HK$",
+        "137227"  => "₹",
+        "520837"  => "R$",
+        "520841"  => "ARS$",
+        "520846"  => "₴",
+        "520835"  => "MX$",
     ];
 
-    // اگر نماد ارز موجود در آرایه نیست، از نماد پیش‌فرض استفاده کن
+    // اگر مقدار عددی نیست، همان را برگردان
+    if (!is_numeric($price)) return $price;
+
+    // اگر نماد ارز موجود نبود، از مقدار خالی استفاده کن
     $currencySymbol = isset($currencySymbols[$symbol]) ? $currencySymbols[$symbol] : '';
 
-    // بازگشت قیمت با نماد ارز
-    return format_price_number($price)." ".$currencySymbol;
+    // بازگشت قیمت قالب‌بندی شده با نماد ارز
+    return format_price_number((float)$price)." ".$currencySymbol;
 }
 
 
@@ -410,4 +423,47 @@ HTML;
     }
 
     return $content;
+}
+
+
+
+function convertToRial($amount, $currencyCode, $format = true)
+{
+    if ($currencyCode == "irr") {
+        return format_price_with_currencySymbol($amount);
+    }
+
+    $currencyCode = (int)$currencyCode;
+    $rate = Cache::get("currency_rate_{$currencyCode}");
+
+    if (!$amount) {
+        return 0;
+    }
+
+    $amount = (int)$amount;
+
+    if (!$rate) {
+        return 0;
+    }
+
+    $rateInToman = $rate / 10;
+
+    // محاسبه قیمت نهایی با دقت کامل
+    $price = $amount * $rateInToman;
+
+    return $format ? format_price_with_currencySymbol($price) : $price;
+}
+
+
+function estimateReadingTime($text, $wpm = 100, $multiplier = 1.2) {
+    $wordCount = str_word_count($text);
+    $minutes = ceil(($wordCount / $wpm) * $multiplier);
+    return $minutes;
+}
+
+function convertPersianToEnglishNumbers($string)
+{
+    $persian = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    $english = ['0','1','2','3','4','5','6','7','8','9'];
+    return str_replace($persian, $english, $string);
 }

@@ -30,27 +30,57 @@ return [
     //قالب های ماژول ارسال سریع ثبت نام
     'ultra' => [
         'register' => [
-            'ultra_code' => '3074',
+            'ultra_code' => '278451',
+            'params' => [
+                'VerificationCode',
+            ]
+        ],
+        'login' => [
+            'ultra_code' => '376686',
             'params' => [
                 'VerificationCode',
             ]
         ],
         'forgotPass' => [
-            'ultra_code' => '3073',
+            'ultra_code' => '278451',
             'params' => [
                 'VerificationCode',
             ]
         ],
-        'postCode' => [
-            'ultra_code' => '3156',
+        'changeStatus' => [
+            'ultra_code' => '898392',
             'params' => [
-                'CODE',
+                'ORDER',
             ]
         ],
-        'addOrder' => [
-            'ultra_code' => '3079',
+        'changeCurrencyIncomeOrderStatus' => [
+            'ultra_code' => '277911',
             'params' => [
-                'order',
+                'ORDER',
+            ]
+        ],
+        'answerTicket' => [
+            'ultra_code' => '207255',
+            'params' => [
+                'id',
+            ]
+        ],
+        'addTicket' => [
+            'ultra_code' => '590265',
+            'params' => [
+                'name',
+            ]
+        ],
+        'authorizeTrue' => [
+            'ultra_code' => '881213',
+            'params' => [
+                'name',
+            ]
+        ],
+        'authorizeFalse' => [
+            'ultra_code' => '612697',
+            'params' => [
+                'name',
             ]
         ],
     ]

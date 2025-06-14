@@ -18,18 +18,19 @@
                 </div>
             </div>
         </div>
+        <div class="admin-page-top">
+            <p class="">تعداد کل : {{ $users_count }} عدد </p>
+            <div class="admin-filter-search mb-3">
+                <form action="" class="d-flex align-items-center">
+                    <input style="border-radius: 10px;" type="text" name="name" placeholder="جستجوی کاربر...">
+                    <button class="btn-blue mr-2">جستجو</button>
+                </form>
+            </div>
+        </div>
         <form action="{{ route("admin_users_group_action") }}" method="post">
             @csrf
         <div class="admin-table-content">
-            <div class="admin-page-top">
-                <p class="">تعداد کل : {{ $users_count }} عدد </p>
-                <div class="admin-filter-search mb-3">
-                    <form action="" class="d-flex align-items-center">
-                        <input style="border-radius: 10px;" type="text" name="name" placeholder="جستجوی کاربر...">
-                        <button class="btn-blue mr-2">جستجو</button>
-                    </form>
-                </div>
-            </div>
+
             <div class="admin-order-select-box mt-3 mb-3">
                 <div></div>
                 <div class="admin-order-select-box">
@@ -72,7 +73,7 @@
                             </a>
                             <div class="admin-table-actions"><a href="{{ route("admin_edit_user",["id"=>$user->id]) }}"><span>بروزرسانی</span></a>
                                 <a class="admin-table-actions-delete"
-                                   href="{{ route("admin_delete_user",["id"=>$user->id]) }}"><span>حذف</span></a> <a href="#"><span>نمایش در سایت</span></a>
+                                   href="{{ route("admin_delete_user",["id"=>$user->id]) }}"><span>حذف</span></a>
                             </div>
                         </td>
                         <td style="width: 230px;    min-width: 230px;">{{ $user->email}}</td>

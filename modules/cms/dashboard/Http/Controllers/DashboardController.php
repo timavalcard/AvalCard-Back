@@ -3,6 +3,8 @@
 
 namespace CMS\Dashboard\Http\Controllers;
 
+use CMS\Sms\Services\SmsService;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Http\Controllers\Controller;
 use CMS\Comment\Repository\CommentRepository;
@@ -10,7 +12,8 @@ use CMS\Order\Models\Order;
 use CMS\Order\Repository\OrderRepository;
 use CMS\Product\Repository\ProductRepository;
 use CMS\RolePermissions\Models\Permission;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 class DashboardController extends Controller
 {
 
@@ -18,7 +21,31 @@ class DashboardController extends Controller
     public function index()
     {
 
-        $orders=Order::all();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer abuqbk0edz0vh8regmkr'
+        ])->get('https://studio.persianapi.com/index.php/web-service/currency/free?format=json&limit=144&page=1');
+
+        // اگر درخواست موفق بود
+        if ($response->successful()) {
+            $data = $response->json();
+            // بررسی داده‌ها
+            if (isset($data['result']['data'])) {
+                $currencies = $data['result']['data'];
+
+                // ذخیره‌سازی نرخ ارزها در کش
+                foreach ($currencies as $currency) {
+                    if (isset($currency['عنوان']) && isset($currency['قیمت'])) {
+                        $currencyName = $currency['عنوان']; // نام ارز مانند دلار
+                        $key = $currency['key']; // نام ارز مانند دلار
+                        $currencyPrice = $currency['قیمت']; // قیمت ارز
+
+                        // ذخیره‌سازی نرخ ارز در کش
+                        Cache::put("currency_rate_{$key}", $currencyPrice, now()->addMinutes(1000)); // 1 دقیقه مدت زمان ذخیره در کش
+                    }
+                }
+            }
+        }
+        $orders=Order::query()->where("order_type","==","gift_cart")->get();
         $order_products_id = $orders->pluck("products_id");
         $products_ids = [];
         foreach ($order_products_id as $item) {

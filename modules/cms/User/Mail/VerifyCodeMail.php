@@ -35,6 +35,6 @@ class VerifyCodeMail extends Mailable
     public function build()
     {
         return $this->markdown('User::mails.verify-mail')->
-            subject('هیدی لیدی| کد تایید');
+            subject('اول کارت| کد تایید');
     }
 }

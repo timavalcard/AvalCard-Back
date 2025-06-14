@@ -71,7 +71,7 @@
 
             </p>
             @if(request()->post_type!="article")
-                <p>
+                <p class="d-none">
                     <label for="">درصد تخفیف محصولات این دسته بندی :</label>
                     <input type="text" name="offer" placeholder="درصد تخفیف را وارد کنید" value="@if(old("offer")){{old("offer")}}@endif">
                 </p>
@@ -190,10 +190,12 @@
                         <tr>
 
                             <td>
+                                @if($category->media)
                                 <img class="admin-media-frame-img mt-3"
                                      src="@if($category->media) {{ $category->media->url }} @endif "
                                      style="width: 50px; height: 50px;margin-left: 10px;">
-                                <a href="{{ route("admin_edit_category",["id"=>$category->id,"post_type"=>request()->post_type]) }}">{{ $category->name }}</a>
+                                @endif
+                                <a style="display: block;margin-top: 10px" href="{{ route("admin_edit_category",["id"=>$category->id,"post_type"=>request()->post_type]) }}">{{ $category->name }}</a>
 
                                 <div class="admin-table-actions">
 
@@ -226,7 +228,11 @@
             </div>
         </div>
     </div>
-
+    <style>
+        .admin-table-actions{
+            padding-right: 50px;
+        }
+    </style>
 </div>
             @push("admin-scripts")
                 <script>

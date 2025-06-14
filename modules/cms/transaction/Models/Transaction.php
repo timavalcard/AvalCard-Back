@@ -12,7 +12,9 @@ use CMS\Wallet\Models\Wallet;
 class Transaction extends Model
 {
      protected $fillable=["transaction_id","error_text","status","price","user_id","gateway"];
-
+    protected $casts = [
+        'transaction_id' => 'string',
+    ];
     public static $COMPLETED="completed";
     public static $PROCESSING="processing";
     public static $PENDING="pending";

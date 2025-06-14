@@ -10,7 +10,11 @@
     "send_invoice_to_stock" : "ارسال فاکتور به انبار",
     "packing" : "بسته بندی",
     "send_to_post" : "ارسال به پست",
-    "delivered_to_customer" : "تحویل به مشتری"
+    "delivered_to_customer" : "تحویل به مشتری",
+    "wise" : "حساب بانکی",
+    "paypal" : "پی پال",
+    "webmoney" : "وب مانی",
+    "crypto" : "ارز دیجیتال"
 
 
 }

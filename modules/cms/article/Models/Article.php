@@ -60,18 +60,7 @@ public function tags()
 
     public function getUrlAttribute()
     {
-        $category=$this->category;
-        if($category->isEmpty()){
-
-            return route("article.index",["slug"=>$this->slug]);
-        } elseif(isset($category[0])){
-            $category=$category[0];
-            if($category->parent==0){
-                return route("article.index2",["slug"=>$this->slug,"category"=>$category->slug]);
-            } else{
-                return route("article.index2",["slug"=>$this->slug,"category"=>$category->slug]);
-            }
-        }
+        return route("article.index",["slug"=>$this->slug]);
     }
 
     public function getCommentCountAttribute(){

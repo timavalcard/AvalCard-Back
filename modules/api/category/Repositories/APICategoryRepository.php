@@ -51,15 +51,11 @@ class APICategoryRepository
         foreach ($category->children as $child){
             $catIds[]=$child->id;
         }
-        if($category->type=="group_product"){
-            $products=GroupProduct::query()->whereHas('category',function(Builder $query) use ($catIds){
-                $query->whereIn( 'category_id' , $catIds );
-            })->orderByDesc('created_at')->limit($limit)->get();
-        } else{
-            $products=Product::query()->whereHas('category',function(Builder $query) use ($catIds){
-                $query->whereIn( 'category_id' , $catIds );
-            })->orderByDesc('created_at')->limit($limit)->get();
-        }
+
+        $products=Product::query()->whereHas('category',function(Builder $query) use ($catIds){
+            $query->whereIn( 'category_id' , $catIds );
+        })->orderByDesc('created_at')->limit($limit)->get();
+
 
         return $products;
 

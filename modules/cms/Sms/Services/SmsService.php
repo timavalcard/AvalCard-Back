@@ -18,39 +18,45 @@ class SmsService
     public static function ultra(string $ultra, array $data, $number)
     {
 
-        $url = "https://portal.amootsms.com/rest/SendWithPattern";
-        $token = "4F10D57FE55D037594C93049AB320A800342364A";
-        $patternCodeID = config('Sms.ultra.' . $ultra . '.ultra_code');
-        $mobile = $number;
-        $values = [];
+        $url = "https://api.sms.ir/v1/send/verify";
+        $token = "yYRwU7TxKEZtERtKIfwbTcPLtPLzteyvWrotc9sBbbbxXwUz";
 
-        foreach (config('Sms.ultra.' . $ultra . '.params') as $key => $param) {
-            $values[] = $data[$key];
+        $patternCode = config('Sms.ultra.' . $ultra . '.ultra_code');
+        $mobile = $number;
+        $params = config('Sms.ultra.' . $ultra . '.params');
+
+        $parameters = [];
+
+        foreach ($params as $key => $param) {
+
+            $parameters[] = [
+                "name" => $param,
+                "value" => $data[$key]
+            ];
         }
 
-        $patternValues = implode(",", $values);
-
         $postFields = [
-            'Token' => $token,
-            'Mobile' => $mobile,
-            'PatternCodeID' => $patternCodeID,
-            'PatternValues' => $patternValues,
+            "mobile" => $mobile,
+            "templateId" => (int) $patternCode,
+            "parameters" => $parameters
         ];
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "X-API-KEY: $token"
+        ]);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postFields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postFields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
-
-
-
         curl_close($ch);
 
-
         return $response;
+
 
     }
 }

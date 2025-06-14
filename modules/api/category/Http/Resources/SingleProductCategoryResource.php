@@ -25,12 +25,8 @@ class SingleProductCategoryResource extends JsonResource
     public function toArray($request)
     {
         $parent=[];
-        if($this->type=="group_product") {
-            $products = GroupProductResource::collection(APICategoryRepository::latest_products($this, request()->limit));
-        } else{
-            $products = ProductResource::collection(APICategoryRepository::latest_products($this, request()->limit));
+        $products = ProductResource::collection(APICategoryRepository::latest_products($this, request()->limit));
 
-        }
         if($products->resource instanceof LengthAwarePaginator){
             $pagination=[
                 'per_page'=>$products->perPage() ,

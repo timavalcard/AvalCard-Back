@@ -51,7 +51,18 @@ class PageServiceProvider extends ServiceProvider
                 "icon" => "fa-file",
                 "children"=>[
                     ["name"=>"لیست برگه ها","link"=>route("admin_list_page")],
-                    ["name"=>"افزودن برگه جدید","link"=>route("admin_add_page")],
+                //    ["name"=>"افزودن برگه جدید","link"=>route("admin_add_page")],
+                ],
+                "permission"=>\CMS\RolePermissions\Models\Permission::PERMISSION_MANAGE_PAGE
+            ]);
+
+            config()->set("AdminSidebar.log",[
+                "name" => "خطاها",
+                "link" => route("log.index"),
+                "icon" => "fa-file",
+                "children"=>[
+                    ["name"=>"لیست خطاها","link"=>route("log.index")],
+                    //    ["name"=>"افزودن برگه جدید","link"=>route("admin_add_page")],
                 ],
                 "permission"=>\CMS\RolePermissions\Models\Permission::PERMISSION_MANAGE_PAGE
             ]);

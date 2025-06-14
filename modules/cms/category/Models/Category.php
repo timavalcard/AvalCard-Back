@@ -97,12 +97,16 @@ class Category extends Model
     public function getUrlAttribute()
     {
 
-        if($this->parent==0){
-            return route("category.index",["slug"=>$this->slug]);
-        } else{
-            $parent=CategoryRepository::findNotFail($this->parent);
-            return route("category.index2",["slug"=>$this->slug,"parent"=>$parent->slug]);
+        if($this->product_type == "gift_cart"){
+            return route("category.gift_cart",["slug"=>$this->slug]);
+        }
 
+        if($this->product_type == "buy_product"){
+            return route("category.buy_product",["slug"=>$this->slug]);
+        }
+
+        if($this->product_type == "inter_payment"){
+            return route("category.inter_payment",["slug"=>$this->slug]);
         }
     }
 

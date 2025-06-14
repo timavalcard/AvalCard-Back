@@ -19,35 +19,36 @@
                     </div>
                 </div>
             </div>
-
-    <form action="{{ route("admin_product_group_action") }}" method="post">
-        @csrf
-        <div class="admin-table-content">
             <div class="admin-page-top">
-                <p class="">تعداد کل : {{ $products_count }} عدد </p>
+                {{--<p class="">تعداد کل : {{ $products_count }} عدد </p>--}}
                 <div class="admin-filter-search mb-3">
                     <form action="" class="d-flex align-items-center">
                         <input style="border-radius: 10px;" type="text" name="name" placeholder="نام مورد نظر را وارد کنید...">
+                        <input  type="hidden" name="product_type" value="{{ request()->product_type }}">
                         <button class="btn-blue mr-2">جستجو</button>
                     </form>
+                </div>
             </div>
-            </div>
+    <form action="{{ route("admin_product_group_action") }}" method="post">
+        @csrf
+        <div class="admin-table-content">
+
             <div class="admin-order-select-box mt-3 mb-3">
                 <div class="admin-order-by-box">
 
                     <label>مرتب سازی بر اساس : </label>
 
 
-                    <a href="{{ route("admin_product_list" ,["orderBy"=>"desc"]) }}"
+                    <a href="{{ route("admin_product_list" ,["orderBy"=>"desc","product_type"=>request()->product_type]) }}"
                        class="btn btn-sm btn-outline-dark @if(request("orderBy")=="desc" ) btn-dark text-white @endif">قدیم به جدید</a>
-                    <a href="{{ route("admin_product_list" ,["orderBy"=>"asc"]) }}"
+                    <a href="{{ route("admin_product_list" ,["orderBy"=>"asc","product_type"=>request()->product_type]) }}"
                        class="btn btn-sm btn-outline-dark @if(!isset($_GET["orderBy"]) || request("orderBy")=="asc" ) btn-dark text-white @endif">جدید به قدیم</a>
-                    <a href="{{ route("admin_product_list" ,["orderBy"=>"name"]) }}"
+                    <a href="{{ route("admin_product_list" ,["orderBy"=>"name","product_type"=>request()->product_type]) }}"
                        class="btn btn-sm btn-outline-dark @if(request("orderBy")=="name") btn-dark text-white @endif">نام</a>
 
                 </div>
                 <div>
-                    <a href="{{ route("admin_product_add") }}" class="btn-blue text-white">افزودن محصول</a>
+                    <a href="{{ route("admin_product_add",["product_type"=>request()->product_type]) }}" class="btn-blue text-white">افزودن محصول</a>
                 </div>
 
             </div>
@@ -70,7 +71,6 @@
                     </th>
                     <th>نام محصول</th>
                     <th>قیمت</th>
-                    <th>انبار</th>
                     <th>دسته بندی ها</th>
                     <th>عکس</th>
                     <th>تاریخ انتشار</th>
@@ -86,8 +86,15 @@
                     <td><a href="{{ route("admin_product_edit",["id"=>$product->id]) }}">{{ $product->title }}</a>
 
                     </td>
-                    <td>{!! $product->product_price() !!}</td>
-                    <td>{{ $product->stock_number() }}</td>
+                    <td>
+                        @if($product->product_type == "buy_product")
+                            بر حسب کالا
+                            @else
+                                 {!! $product->product_price() !!}
+                        @endif
+
+                    </td>
+
                     <td>@foreach($category  as $cat){{$cat->name." | "}}@endforeach</td>
                     <td>
                         @if($product->media_id)
@@ -134,7 +141,7 @@
 
                                                             </span>
                             </a>
-                            <a title="نمایش" href="{{ $product->url }}">
+                            {{--<a title="نمایش" href="{{ $product->url }}">
                                                             <span>
                                                              <svg id="Group_70" data-name="Group 70" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
           <path id="Path_77" data-name="Path 77" d="M0,0H20V20H0Z" fill="none"/>
@@ -143,7 +150,7 @@
         </svg>
 
                                                             </span>
-                            </a>
+                            </a>--}}
                         </div>
                     </td>
 
@@ -151,11 +158,12 @@
 
 
             </table>
-                    <p class="text-left mt-4 pl-3">تعداد کل : {{ $products_count }} عدد </p>
+                    {{--<p class="text-left mt-4 pl-3">تعداد کل : {{ $products_count }} عدد </p>--}}
         </div>
     </form>
     <div class="admin-paginator">
-        {{ $products->links() }}
+        {{ $products->appends(request()->query())->links() }}
+
     </div>
    @includeIf("admin.partials.delete_modal")
         </x-slot>

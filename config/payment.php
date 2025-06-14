@@ -187,22 +187,22 @@ return [
         ],
         'zarinpal' => [
             /* normal api */
-            'apiPurchaseUrl' => 'https://ir.zarinpal.com/pg/services/WebGate/wsdl',
-            'apiPaymentUrl' => 'https://www.zarinpal.com/pg/StartPay/',
-            'apiVerificationUrl' => 'https://ir.zarinpal.com/pg/services/WebGate/wsdl',
+            'apiPurchaseUrl'      => 'https://api.zarinpal.com/pg/v4/payment/request.json',
+            'apiPaymentUrl'       => 'https://www.zarinpal.com/pg/StartPay/',
+            'apiVerificationUrl'  => 'https://api.zarinpal.com/pg/v4/payment/verify.json',
 
             /* sandbox api */
-            'sandboxApiPurchaseUrl' => 'https://sandbox.zarinpal.com/pg/services/WebGate/wsdl',
+            'sandboxApiPurchaseUrl' => 'https://sandbox.zarinpal.com/pg/v4/payment/request.json',
             'sandboxApiPaymentUrl' => 'https://sandbox.zarinpal.com/pg/StartPay/',
-            'sandboxApiVerificationUrl' => 'https://sandbox.zarinpal.com/pg/services/WebGate/wsdl',
+            'sandboxApiVerificationUrl' => 'https://sandbox.zarinpal.com/pg/v4/payment/verify.json',
 
             /* zarinGate api */
             'zaringateApiPurchaseUrl' => 'https://ir.zarinpal.com/pg/services/WebGate/wsdl',
             'zaringateApiPaymentUrl' => 'https://www.zarinpal.com/pg/StartPay/:authority/ZarinGate',
             'zaringateApiVerificationUrl' => 'https://ir.zarinpal.com/pg/services/WebGate/wsdl',
 
-            'mode' => 'sandbox', // can be normal, sandbox, zaringate
-            'merchantId' => '',
+            'mode' => 'normal', // can be normal, sandbox, zaringate
+            'merchantId' => 'd769cf76-f02a-4622-b9cb-ce5776f759ca',
             'callbackUrl' => "https://".$_SERVER['SERVER_NAME']."/verify-payment",
             'description' => "زرین پال",
             'persian_name'=>"زرین پال",
@@ -216,7 +216,7 @@ return [
 
             'mode' => 'normal', // can be normal, direct
 
-            'merchantId' => '',
+            'merchantId' => '67f684bb6f38030015fb4595',
             'callbackUrl' => "https://".$_SERVER['SERVER_NAME']."/verify-payment",
             'description' => 'payment using zibal',
             'persian_name'=>"زیبال"

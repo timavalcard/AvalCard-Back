@@ -46,9 +46,10 @@ class VerifyCodeService
 
     public static function check($id, $code)
     {
+
         if (self::get($id) != $code) return false;
 
-        self::delete($id);
+        //self::delete($id);
         return  true;
     }
 }

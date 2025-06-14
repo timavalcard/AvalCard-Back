@@ -7,12 +7,17 @@ Route::group(["namespace"=>"API\User\Http\Controllers","middleware"=>"web"],func
         Route::post('/register', "UserController@register");
         Route::post('/register-check-code', "UserController@register_check_code");
         Route::post('/login', "UserController@login");
-        Route::post('reset-password-send-email', 'UserController@sendResetPasswordEmail')->name("api.resetEmail");
+        Route::post('register-send-code', 'UserController@sendRegisterEmail')->name("api.registerEmail");
+        Route::post('reset-password-send-code', 'UserController@sendResetPasswordEmail')->name("api.resetEmail");
         Route::post('reset-password-check-code', 'UserController@ResetPasswordCheckCode')->name("api.resetCheckCOde");
         Route::post('reset-password-update', 'UserController@updatePassword')->name("api.updatePassword");
 
         Route::post('change-email-send-email', 'UserController@changeEmailSendCode')->name("api.resetEmail");
         Route::post('change-email-check-code', 'UserController@changeEmailCheckCode')->name("api.resetCheckCOde");
+
+        Route::post('login-send-code', 'UserController@loginSendCode')->name("api.loginSendCode");
+        Route::post('login-check-code', 'UserController@loginCheckCode')->name("api.loginCheckCode");
+
 
         Route::middleware('auth:sanctum')->get('/check-login-status','UserController@checkLoginStatus');
         Route::post('/check-email', "UserController@checkEmail");
@@ -26,6 +31,20 @@ Route::group(["namespace"=>"API\User\Http\Controllers","middleware"=>"web"],func
         Route::middleware('auth:sanctum')->post('/upload-documents', "UserController@upload_documents");
         Route::middleware('auth:sanctum')->post('/uploaded-documents', "UserController@uploaded_documents");
         Route::middleware('auth:sanctum')->post('/delete-document', "UserController@delete_documents");
+        Route::middleware('auth:sanctum')->post('/wallet-transactions', "UserController@wallet_transactions");
+        Route::middleware('auth:sanctum')->post('/increase-wallet', "UserController@increase_wallet");
+        Route::middleware('auth:sanctum')->post('/update-password', "UserController@update_password");
+        Route::middleware('auth:sanctum')->post('/update-profile', "UserController@update_profile");
+        Route::middleware('auth:sanctum')->post('/add-address', "UserController@add_address");
+        Route::middleware('auth:sanctum')->post('/update-address', "UserController@update_address");
+        Route::middleware('auth:sanctum')->post('/delete-address', "UserController@delete_address");
+        Route::middleware('auth:sanctum')->post('/add-bank-cart', "UserController@add_bank_cart");
+        Route::middleware('auth:sanctum')->post('/update-bank-cart', "UserController@update_bank_cart");
+        Route::middleware('auth:sanctum')->post('/delete-bank-cart', "UserController@delete_bank_cart");
+
+        Route::middleware('auth:sanctum')->post('/authorize', "UserController@add_authorize");
+
+
         Route::post('/add-newsletter', "UserController@add_newsletter");
 
         Route::post('/logout', "UserController@logout")->middleware('auth:sanctum');

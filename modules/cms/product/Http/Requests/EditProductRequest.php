@@ -24,7 +24,7 @@ class EditProductRequest extends FormRequest
     public function rules()
     {
         $rules= [
-            "title"=>"required|unique:products,slug,".request()->slug,
+            "title"=>"required|unique:products,id,".request()->id,
             "contents"=>"nullable",
             "excerpt"=>"nullable",
             "product_cat"=>"nullable",

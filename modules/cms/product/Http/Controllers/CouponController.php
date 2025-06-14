@@ -130,16 +130,9 @@ class CouponController extends Controller
 
     public function edit_coupon_form(Coupon $coupon)
     {
-        if($coupon->type=="service"){
-            $categories = (new ServiceRepo())->all_Parent_active();
-            return view("Product::Admin.coupon.coupon_service_edit",compact("coupon","categories"));
+        $categories=CategoryRepository::get_by_type("product");
+        return view("Product::Admin.coupon.coupon_edit",compact("coupon","categories"));
 
-        } elseif ($coupon->type=="product"){
-            $categories=CategoryRepository::get_by_type("product");
-            return view("Product::Admin.coupon.coupon_edit",compact("coupon","categories"));
-
-        }
-        return abort(404);
     }
 
     public function edit_coupon(Coupon $coupon,EditCouponRequest $request)

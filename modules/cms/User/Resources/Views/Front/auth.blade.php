@@ -27,7 +27,7 @@
                     <p class="statusAuth">
                         ورود به {{ env('APP_NAME') }}
                         <span>
-              لطفا برای ادامه شماره همراه یا ایمیل خود را وارد نمایید.
+              لطفا برای ادامه ایمیل خود را وارد نمایید.
             </span>
                     </p>
                     <form class="custom_form " id="authForm">
@@ -47,7 +47,7 @@
                             <div class="tab">
                                 <div class="floating-label ">
 
-                                    <input class="floating-input" type="text" id="mobile_register" name="mobile" placeholder="شماره همراه یا ایمیل خود را وارد کنید" autofocus>
+                                    <input class="floating-input" type="email" id="mobile_register" name="mobile" placeholder=" ایمیل خود را وارد کنید" autofocus>
                                 </div>
                             </div>
 
@@ -668,7 +668,7 @@
                 jQuery("input.show-input").attr("type",type)
             })
         </script>
-        <script src="{{ theme_asset("js/validation.js") }}"></script>
+        <script src="{{ theme_asset("js/validation.js?ver=2") }}"></script>
         <script src="{{ theme_asset("js/tata.js") }}"></script>
         <script>
 

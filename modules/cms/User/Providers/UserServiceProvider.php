@@ -33,6 +33,20 @@ class UserServiceProvider extends ServiceProvider
     {
 
         $this->app->booted(function (){
+            config()->set("AdminSidebar.authorize",[
+                "name" => "درخواست احراز هویت",
+                "link" => route("admin_list_authorize"),
+                "icon" => "fa-user-circle",
+                "children" => [
+                    ["name"=>"لیست درخواست ها","link"=>route("admin_list_authorize")],
+                    ["name"=>"لیست کاربر های احراز شده","link"=>route("admin_list_authorized")],
+                    ["name"=>"لیست کاربر های رد شده","link"=>route("admin_list_not_authorized")],
+                ],
+                "permission"=>\CMS\RolePermissions\Models\Permission::PERMISSION_MANAGE_USERS
+            ]);
+
+
+
             config()->set("AdminSidebar.user",[
                 "name" => "کاربران",
                 "link" => route("admin_list_user"),

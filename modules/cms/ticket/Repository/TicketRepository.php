@@ -21,19 +21,36 @@ class TicketRepository
     public static function order_ticket($order="all")
     {
         $order=$order==null ? "all" : $order;
+        $tickets = Ticket::query()->orderByDesc("created_at");
         switch ($order){
             case "all":
-                $tickets = Ticket::query()->orderByDesc("created_at")->paginate(10);
+                $tickets = Ticket::query()->orderByDesc("created_at");
                 break;
-            case "unapproved":
-                $tickets = Ticket::query()->orderByDesc("created_at")->paginate(10);
+            case "بسته":
+                $tickets = Ticket::query()->where("status","بسته")->orderByDesc("created_at");
                 break;
-            case "approved":
-                $tickets = Ticket::query()->orderByDesc("created_at")->paginate(10);
+            case "در حال بررسی":
+                $tickets = Ticket::query()->where("status","در حال بررسی")->orderByDesc("created_at");
                 break;
-        }
+            case "پاسخ داده شده":
+                $tickets = Ticket::query()->where("status","پاسخ داده شده")->orderByDesc("created_at");
+                break;
+            case "در انتظار پاسخ کاربر":
+                $tickets = Ticket::query()->where("status","در انتظار پاسخ کاربر")->orderByDesc("created_at");
+                break;
 
-        return $tickets;
+        }
+        $title=request()->title;
+        if($title){
+            $tickets=$tickets->where('subject', 'like', "%$title%");
+        }
+        if (request()->mobile) {
+            $mobile = convertPersianToEnglishNumbers(request()->mobile);
+            $tickets = $tickets->whereHas('user', function ($query) use ($mobile) {
+                $query->where('mobile', 'like', "%$mobile%");
+            });
+        }
+        return $tickets->paginate(10);
     }
 
     public static function destroy($id)

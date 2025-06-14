@@ -180,7 +180,7 @@
 
                             });
                             $(".item-" + attr_id).select2({
-                                tags: true,
+                                tags: false,
                                 tokenSeparators: [',', ' '],
                             });
 

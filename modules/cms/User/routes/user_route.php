@@ -13,6 +13,16 @@ Route::group(
 
 //admin panel routes
     Route::group(get_information_for_admin_panel_route_group(),function (){
+        Route::get("/authorize","UserController@list_authorize")->name("admin_list_authorize");
+        Route::get("/authorized","UserController@list_authorized")->name("admin_list_authorized");
+        Route::get("/not-authorized","UserController@list_not_authorized")->name("admin_list_not_authorized");
+        Route::get("/authorize/check/{id}","UserController@check_authorize")->name("admin_check_authorize");
+        Route::get("/authorized/check/{id}","UserController@check_authorized")->name("admin_check_authorized");
+        Route::get("/not-authorized/check/{id}","UserController@check_not_authorized")->name("admin_check_not_authorized");
+        Route::post("/authorize/decline/{id}","UserController@decline_authorize")->name("authorize_decline");
+        Route::post("/authorize/accept/{id}","UserController@accept_authorize")->name("authorize_accept");
+
+
         Route::get("/user","UserController@list_user")->name("admin_list_user");
         Route::get("/user/add","UserController@add_user_form")->name("admin_add_user");
         Route::post("/user/add","UserController@add_user")->name("admin_add_user");

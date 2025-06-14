@@ -34,7 +34,7 @@ class transaction_increase_wallet_listener
         if($wallet instanceof Wallet){
             TransactionRepository::updateStatus($event->transaction,Transaction::$COMPLETED);
             TransactionRepository::update_transactionAble_Status($event->transaction->transactionable,Transaction::$COMPLETED);
-           WalletRepository::increase($event->transaction->price);
+           WalletRepository::increase($event->transaction->price,$wallet->user);
 
         }
     }

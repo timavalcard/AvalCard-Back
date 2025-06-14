@@ -31,6 +31,8 @@ class SettingController extends Controller
             "tel_comment_add"=>ShopRepository::getOption("tel_comment_add"),
             "tel_order_add"=>ShopRepository::getOption("tel_order_add"),
             "tel_user_add"=>ShopRepository::getOption("tel_user_add"),
+            "tel_ticket_add"=>ShopRepository::getOption("tel_ticket_add"),
+            "tel_authorize_add"=>ShopRepository::getOption("tel_authorize_add"),
            ];
 
         return view("Setting::Admin.tel_bot",compact("data"));
@@ -48,6 +50,8 @@ class SettingController extends Controller
             "tel_comment_add"=>$request->tel_comment_add,
             "tel_order_add"=>$request->tel_order_add,
             "tel_user_add"=>$request->tel_user_add,
+            "tel_ticket_add"=>$request->tel_ticket_add,
+            "tel_authorize_add"=>$request->tel_authorize_add,
 
         ]);
 

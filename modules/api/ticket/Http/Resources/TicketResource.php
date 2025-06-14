@@ -25,8 +25,8 @@ class TicketResource extends JsonResource
 
             'department' => $this->department,
             'messages' => TicketMessageResource::collection($this->messages),
-            'updated_at' => Carbon::parse($this->updated_at)->format("d-m-Y"),
-            'created_at' => Carbon::parse($this->created_at)->format("d-m-Y"),
+            'updated_at' => IR_TimestampToDate(Carbon::parse($this->created_at)->format("d-m-Y"),'Y/n/j'),
+            'created_at' => IR_TimestampToDate(Carbon::parse($this->updated_at)->format("d-m-Y"),'Y/n/j'),
 
         ];
     }

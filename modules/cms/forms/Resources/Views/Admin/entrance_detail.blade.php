@@ -22,17 +22,16 @@
             </div>
             <div class="col-12 mt-5">
                 <div class="billing_information_items">
+
                     @foreach($entrance->values as $value)
-                        @if($loop->index!=0 && $loop->iteration!=$loop->count)
                             <div class="billing_information_item">
                                 <div class="billing_information_item_title">
                                     {!!   $value["label"]??"" !!} :
                                 </div>
                                 <div class="billing_information_item_value">
-                                    {{ $value["userData"][0]??"" }}
+                                    {{ $value["value"]??"" }}
                                 </div>
                             </div>
-                        @endif
                     @endforeach
 
                 </div>

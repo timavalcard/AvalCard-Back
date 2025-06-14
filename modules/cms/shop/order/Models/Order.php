@@ -9,8 +9,11 @@ use CMS\User\Models\User;
 
 class Order extends Model
 {
-    protected $fillable=[ "user_id","is_course", "products_id","factor","post_tracking_code", "status","delivery_status", "price","payment_type","address"];
-    protected $casts=["products_id"=>"json","address"=>"json","factor"=>"json"];
+    protected $fillable=[ "user_id","coupon_name","coupon_discount","payed_at","comment","order_type","is_course", "products_id","factor","post_tracking_code", "status","delivery_status", "price","payment_type","address"];
+    protected $casts=[
+        "products_id"=>"json",
+        "comment"=>"json",
+        "address"=>"json","factor"=>"json"];
     public static $COMPLETED="completed";
     public static $PROCESSING="processing";
     public static $PENDING="pending";
@@ -35,7 +38,7 @@ class Order extends Model
 
     public static $delivery_statuses=[self::DELIVERY_INVOICE_TO_STOCK,self::PACKING, self::SEND_TO_POST, self::DELIVERED_TO_CUSTOMER];
 
-    public static $statuses=[self::COMPLETED,self::PENDING, self::ON_HOLD, self::CANCELLED, self::REFUNDED, self::FAILED, self::PROCESSING,];
+    public static $statuses=[self::COMPLETED,self::PENDING, self::ON_HOLD, self::CANCELLED, self::PROCESSING,];
 
     public static $pay_statuses=[self::PENDING,self::FAILED,self::ON_HOLD];
     public static $succeed_statuses=[self::PROCESSING,self::COMPLETED];
@@ -54,7 +57,10 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    public function log()
+    {
+        return $this->hasMany(OrderLog::class);
+    }
     public function getProductsNameAttribute()
     {
         $products_id=$this->products_id;

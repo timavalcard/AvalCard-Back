@@ -254,6 +254,8 @@
                                  src="@if($article->media) {{ $article->media->url }}@endif"
                                  style="width: 100%; height: auto;margin-top: 20px;">
 
+                            <p class="mt-2 mb-2">سایز : 970 * 385</p>
+
                             <input type="hidden" class="admin-media-frame-input" name="thumbnail"
                                    value="@if($article->media) {{ $article->media->id }} @endif">
 

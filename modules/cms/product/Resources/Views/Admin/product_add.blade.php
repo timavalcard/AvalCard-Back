@@ -71,7 +71,7 @@
                                     <li><a data-toggle="tab" href="#asli">مشخصات اصلی</a></li>
                                     <li><a data-toggle="tab" href="#vizhegi">ویژگی‌ها</a></li>
                                     <li class="for-variable d-none"><a data-toggle="tab" href="#variable">متغیر ها</a></li>
-                                    <li class="for-sample"><a data-toggle="tab" href="#anbar">انبار</a></li>
+                                    {{--<li class="for-sample"><a data-toggle="tab" href="#anbar">انبار</a></li>--}}
                                 </ul>
 
 
@@ -95,8 +95,15 @@
                                                 <span class="d-none btn-danger admin-span-price-offer btn"> قیمت فروش فوق العاده باید کوچک تر از قیمت اصلی باشد </span>
                                             </p>
 
+                                            <p>
+                                                <input type="text" name="time_to_send" class="mt-3" value="{{ old("time_to_send") }}"
+                                                       placeholder="مدت زمان تحویل">
+                                            </p>
+
+
+
                                         </div>
-                                        <p class="mt-2">
+                                        <p class="mt-2 d-none">
                                             <label style="width: 23%">تعداد خریداران محصول : </label>
                                             <input type="text" class="w-50 " name="buyer_count" value="{{  old("buyer_count")  }}">
                                         </p>
@@ -104,7 +111,7 @@
                                     <div id="vizhegi" class="admin-product-list-content-item tab-pane fade in  " >
                                         <div class="vizhegi-select-box mb-3 d-flex align-items-center">
                                             <select class="p-1 vizhegi-select w-50 mb-0">
-                                                <option id="vizhegi-new" value="vizhegi-new" selected>افزودن ویژگی جدید</option>
+                                                <option id="" value="" >انتخاب ویژگی</option>
                                                 @foreach($attributes as $attribute)
                                                     <option value="{{ $attribute->id }}" >{{ $attribute->name }}</option>
                                                 @endforeach
@@ -164,10 +171,186 @@
                         </div>
                     </div>
                     <div class="admin-metabox-item metabox-close">
-                        <div class="admin-metabox-item-title"><h5>توضیحات کوتاه محصول</h5>                        <span
+                        <div class="admin-metabox-item-title"><h5>نکات قبل از خرید</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
                         <p class="col-12 form-item"><textarea name="excerpt" id="excerpt" cols="30" rows="10"></textarea>
                         </p></div>
+
+
+                    <div class="admin-metabox-item metabox-close open">
+                        <div class="admin-metabox-item-title">
+                            <h5>سوالات متداول</h5>
+                            <span  class="admin-metabox-item-btn-up">
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                        </div>
+                        <div class="col-12 form-item">
+                            <div id="faq-wrapper">
+                                @php
+
+                                    $oldFAQ = old('faq',[]);
+                                @endphp
+
+                                @if (empty($oldFAQ))
+                                    <div class="service-item">
+                                        <div class="service-item-header">
+                                            <input type="text" name="faq[0][title]" placeholder="عنوان سوال">
+                                            <button type="button" class="remove-faq">حذف</button>
+                                        </div>
+                                        <textarea name="faq[0][description]" placeholder="جواب سوال"></textarea>
+                                    </div>
+                                @else
+                                    @foreach ($oldFAQ as $index => $service)
+                                        <div class="service-item">
+                                            <div class="service-item-header">
+                                                <input type="text" name="faq[{{$index}}][title]" value="{{ $service['title']??"" }}" placeholder="عنوان سوال">
+                                                <button type="button" class="remove-faq">حذف</button>
+                                            </div>
+                                            <textarea name="faq[{{$index}}][description]" placeholder="جواب سوال">{{ $service['description']??"" }}</textarea>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                <button type="button" id="add-faq">افزودن سوال</button>
+                            </div>
+                            <style>
+                                #addresses-wrapper {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 10px;
+                                    max-width: 600px;
+                                    margin: 10px 0 30px;
+                                    padding: 20px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 8px;
+                                    background-color: #f9f9f9;
+                                }
+                                .address-item {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    align-items: center;
+                                    gap: 10px;
+                                }
+                                .address-item input,
+                                .address-item textarea,
+                                .address-item select {
+                                    flex: 1;
+                                    padding: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                }.address-item input, .address-item textarea, .address-item select {
+                                     display: block !important;
+                                     width: 100% !important;
+                                     flex: 0 0 100%;
+                                 }
+                                .remove-address {
+                                    background-color: #ff4d4d;
+                                    color: white;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                .remove-address:hover {
+                                    background-color: #cc0000;
+                                }
+                                #add-address {
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                #add-address:hover {
+                                    background-color: #45a049;
+                                }
+                                button#add-faq, button.remove-faq,button#add-service, button.remove-service ,#add-address,button.remove-address{
+                                    padding: 19px;
+                                }
+                                #services-wrapper,#faq-wrapper {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 10px;
+                                    max-width: 600px;
+                                    margin: 10px 0 30px;
+
+                                    padding: 20px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 8px;
+                                    background-color: #f9f9f9;
+                                }
+                                .service-item {
+                                    display: grid;
+                                    gap: 5px
+                                }
+
+                                .service-item .service-item-header {
+                                    align-items: center;
+                                    gap: 10px;
+                                    display: flex;
+                                }
+                                .service-item input {
+                                    flex: 1;
+                                    padding: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                }
+                                .remove-service,.remove-faq  {
+                                    background-color: #ff4d4d;
+                                    color: white;
+                                    border: none;
+                                    padding: 5px 10px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                .remove-service:hover,.remove-faq:hover {
+                                    background-color: #cc0000;
+                                }
+                                #add-service ,#add-faq{
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    cursor: pointer;
+                                    border-radius: 4px;
+                                }
+                                #add-service:hover,#add-faq:hover {
+                                    background-color: #45a049;
+                                }
+                            </style>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    document.getElementById("add-faq").addEventListener("click", function () {
+                                        let newService = document.createElement("div");
+                                        let count = document.getElementById("faq-wrapper").children.length;
+
+                                        newService.classList.add("service-item");
+                                        newService.innerHTML = '<div class="service-item-header">' +
+                                            `<input type="text" name="faq[${count}][title]" placeholder="عنوان سوال">` +
+                                            '<button type="button" class="remove-faq">حذف</button>' +
+                                            '</div>' +
+                                            `<textarea name="faq[${count}][description]" placeholder="جواب سوال" />`;
+                                        document.getElementById("add-faq").before(newService);
+                                    });
+
+                                    document.getElementById("faq-wrapper").addEventListener("click", function (e) {
+                                        if (e.target.classList.contains("remove-faq")) {
+                                            e.target.closest('div.service-item').remove();
+                                        }
+                                    });
+                                });
+
+
+
+
+
+
+                            </script>
+
+                        </div>
+                    </div>
 
                     <div class="admin-metabox-item metabox-close open">
                         <div class="admin-metabox-item-title">
@@ -231,13 +414,13 @@
                         </div>
                     </div>
                     <div class="admin-metabox-item metabox-close">
-                        <div class="admin-metabox-item-title"><h5>درصد بازاریاب</h5>                        <span
+                        <div class="admin-metabox-item-title"><h5>درصد کارمزد</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
                         <div class="col-12 form-item">
 
-                            <input type="number" name='affiliate_percent' min="0" max="100" class="mt-3" value="{{ old("affiliate_percent") }}"
+                            <input type="number" name='fee_percent' min="0" max="100" class="mt-3" value="{{ old("fee_percent") }}"
                                    placeholder="درصد را وارد کنید">
-                            <span class="font-italic mt-3 mb-4 d-block">چند درصد از قیمت این محصول به بازاریاب تعلق میگیرد؟</span>
+                            <span class="font-italic mt-3 mb-4 d-block"></span>
                         </div>
                     </div>
 
@@ -263,57 +446,12 @@
                                 </li>
                                 @endforeach
                                 </ul>
-                                <a class="btn btn-outline-primary d-inline-block m-3 btn-add-category"
-                                   href="#">افزودن دسته بندی تازه</a>
 
-                                <div class="form-add-category d-none">
-                                    <input type="hidden" value="product" name="category_post_type">
-
-                                    <p>
-
-                                        <label for="">نام دسته بندی : </label>
-
-                                        <input type="text" name="category_name" placeholder="نام ذسته بندی را وارد کنید" value="{{old("name")}}">
-
-                                    </p>
-
-                                    <p>
-
-                                        <label for="">نامک :</label>
-
-                                        <input type="text" name="category_slug" placeholder="نامک ذسته بندی را وارد کنید" value="{{old("slug")}}">
-
-                                        <span class="font-italic mt-3 mb-4 d-block">نامک نسخه لاتین واژه است که در نشانی‌ها (URLs)‌ استفاده می‌شود. برای نامگذاری فقط از حروف،‌ ارقام و خط تیره استفاده کنید. نمایش فقط با حروف کوچک خواهد بود.</span>
-
-                                    </p>
-                                    <p>
-
-                                        <label for=""> دسته والد :</label>
-
-                                        <select name="category_parent" id="">
-
-                                            <option value="0" selected>دسته اصلی</option>
-
-                                            @foreach($categories as $category)
-
-                                                <option  value="{{$category->id}}">{{ $category->name }}</option>
-
-                                            @endforeach
-
-                                        </select>
-
-                                    </p>
-
-
-                                    <p>
-                                        <button class="btn-blue btn-submit-category">افزودن دسته بندی</button>
-                                    </p>
-                                </div>
                         </div>
                     </div>
 
 
-                    <div class="admin-metabox-item metabox-close position-relative ">
+                    {{--<div class="admin-metabox-item metabox-close position-relative ">
 
                         <div class="admin-metabox-item-title">
                             <h5>برند محصول</h5>
@@ -331,7 +469,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="admin-metabox-item metabox-close">
                         <div class="admin-metabox-item-title"><h5>عکس محصول</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
@@ -345,7 +483,7 @@
                     </div>
 
 
-                    <div class="admin-metabox-item metabox-close">
+                    {{--<div class="admin-metabox-item metabox-close">
                         <div class="admin-metabox-item-title"><h5>گالری تصاویر محصول</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
 
@@ -356,7 +494,7 @@
                             </div>
                         </div>
                     </div>
-
+--}}
                 </div>
             </div>
         </form>

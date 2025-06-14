@@ -11,6 +11,8 @@ Route::group(
         //admin panel routes
             Route::group(get_information_for_admin_panel_route_group(),function (){
                 Route::get("/tickets","TicketController@tickets")->name("tickets.index");
+                Route::get("/tickets/add","TicketController@add_form")->name("tickets.add");
+                Route::post("/tickets/add","TicketController@add")->name("admin_add_ticket");
                 Route::delete("/ticket/delete/{id}","TicketController@delete_ticket")->name("admin_delete_ticket");
                 Route::get("/ticket/ChangeState/{id}","TicketController@ChangeState_ticket")->name("admin_ChangeState_ticket");
 

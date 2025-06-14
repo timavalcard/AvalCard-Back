@@ -55,12 +55,12 @@ class ShopServiceProvider extends ServiceProvider
                 "link" => route("admin_shop_index"),
                 "icon" => "fa-home",
                 "children" => [
-                    ["name"=>"خانه", "link" => route("admin_shop_index")],
-                    ["name"=>"سفارش ها", "link" => route("admin_orders")],
+                    //["name"=>"خانه", "link" => route("admin_shop_index")],
+                   // ["name"=>"سفارش ها", "link" => route("admin_orders")],
                     ["name"=>"کوپن های تخفیف","link"=>route("admin_coupon_list","product")],
                     ["name"=>"مشتریان", "link" => route("admin_customers_list")],
                     ["name"=>"تراکنش ها", "link" => route("admin_transaction_list")],
-                    ["name"=>"تنظیمات", "link" => route("admin_shop_setting")],
+                   // ["name"=>"تنظیمات", "link" => route("admin_shop_setting")],
                 ],
                 "permission"=>\CMS\RolePermissions\Models\Permission::PERMISSION_MANAGE_SHOP
             ]);

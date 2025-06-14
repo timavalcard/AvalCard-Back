@@ -4,6 +4,8 @@ namespace CMS\Order\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use CMS\Order\Models\OrderLog;
+use CMS\Sms\Services\SmsService;
 use Illuminate\Http\Request;
 use CMS\Cart\Repository\CartRepository;
 use CMS\Order\Http\Requests\AddOrderRequest;
@@ -20,7 +22,9 @@ use CMS\User\Repositories\UserRepository;
 use CMS\Wallet\Services\WalletService;
 use Shetabit\Multipay\Invoice;
 use Shetabit\Payment\Facade\Payment;
-
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Illuminate\Support\Collection;
 
 class OrderController extends Controller
 {
@@ -127,19 +131,93 @@ class OrderController extends Controller
         $user_billing=UserRepository::get_billing_meta($order->user);
         $order_products=ProductService::get_cart_products($order->products_id);
 
+        if($order->order_type == "currency_income"){
+            return view("Order::Admin.currency_income_edit",["statuses"=>$statuses,"delivery_statuses"=>$delivery_statuses,"order"=>$order,"user_billing"=>$user_billing,"order_products"=>$order_products]);
+        }
         return view("Order::Admin.edit",["statuses"=>$statuses,"delivery_statuses"=>$delivery_statuses,"order"=>$order,"user_billing"=>$user_billing,"order_products"=>$order_products]);
     }
 
     public function admin_edit_order($id,AddOrderRequest $request)
     {
         $order=OrderRepository::find($id);
+        if($order->order_type == "buy_product"){
+            $order->comment=$request->order_comment;
+        }
+        $order->save();
+        if ($request->price != $order->price) {
+            OrderLog::create([
+                'user_id' => auth()->id(),
+                'order_id' => $order->id,
+                'text' => "قیمت سفارش از {$order->price} به {$request->price} تغییر یافت."
+            ]);
+        }
+
+        if ($request->status != $order->status) {
+            if($order->user){
+                if($order->order_type == "currency_income"){
+                $result = SmsService::ultra('changeCurrencyIncomeOrderStatus', [$order->id], $order->user->mobile);
+                } else{
+
+                $result = SmsService::ultra('changeStatus', [$order->id], $order->user->mobile);
+                }
+            }
+
+            $status=__($order->status);
+            $new_status=__($request->status);
+            OrderLog::create([
+                'user_id' => auth()->id(),
+                'order_id' => $order->id,
+                'text' => "وضعیت سفارش از '{$status}' به '{$new_status}' تغییر یافت."
+            ]);
+        }
+
+
         OrderRepository::admin_edit_order($order,$request->all());
         return redirect()->route("admin_order_edit",["id"=>$order->id]);
     }
 
     public function admin_delete_order($id)
     {
+        OrderLog::create([
+            'user_id' => auth()->id(),
+            'order_id' => $id,
+            'text' => "سفارش پاک شد"
+        ]);
         OrderRepository::destroy($id);
         return back();
     }
+
+
+    public function exportOrders()
+    {
+        $orders = OrderRepository::get_all_orders(false);
+
+        $headings = ['شناسه', 'کاربر', 'قیمت', 'وضعیت','نوع پرداخت', 'تاریخ'];
+
+        $data = collect([$headings])->merge($orders->map(function ($order) {
+            return [
+                $order->id,
+                $order->user? $order->user->name ." ".$order->user->last_name ."-".$order->user->mobile : "پاک شده",
+                $order->formated_price,
+                __($order->status),
+                $order->payment_type,
+                toShamsi($order->created_at,"Y/m/d H:i"),
+            ];
+        }));
+
+        return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromCollection {
+            protected $data;
+            public function __construct(Collection $data)
+            {
+                $this->data = $data;
+            }
+            public function collection()
+            {
+                return $this->data;
+            }
+        }, 'orders.xlsx', ExcelFormat::XLSX);
+    }
+
+
+
 }

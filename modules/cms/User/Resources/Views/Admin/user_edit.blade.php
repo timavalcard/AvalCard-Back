@@ -17,6 +17,37 @@
                           value="@if(old("email")){{old("email")}}@else{{ $user->email }}@endif">
                     </p></div>
 
+
+
+                <div class="admin-metabox-item metabox-close">
+                    <div class="admin-metabox-item-title">
+                        <h5>شماره تلفن کاربر</h5>
+                        <span
+                            class="admin-metabox-item-btn-up">
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                    </div>
+                    <p class="col-12 form-item">
+                        <input type="text" placeholder="شماره تلفن کاربر" name="mobile"
+                               value="@if(old("mobile")){{old("mobile")}}@else{{ $user->mobile }}@endif">
+                    </p>
+                </div>
+
+                <div class="admin-metabox-item metabox-close">
+                    <div class="admin-metabox-item-title">
+                        <h5>کد ملی کاربر</h5>
+                        <span
+                            class="admin-metabox-item-btn-up">
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                    </div>
+                    <p class="col-12 form-item">
+                        <input type="text" placeholder="کد ملی کاربر" name="national_code"
+                               value="@if(old("national_code")){{old("national_code")}}@else{{ $user->national_code }}@endif">
+                    </p>
+                </div>
+
+
                        <div class="admin-metabox-item metabox-close">
                     <div class="admin-metabox-item-title"><h5>پسورد جدید</h5>                        <span
                                 class="admin-metabox-item-btn-up"><i class="fa fa-angle-up"></i></span></div>
@@ -27,6 +58,24 @@
                           value="">
                           <span class="font-italic mt-3 mb-4 d-block">اگر نمیخواهید تغییر کند خالی بزارید</span>
                     </p></div>
+
+                <div className="col-12">
+                    <div class="mt-4 mb-4">
+
+                        <label class="d-block">عکس پروفایل</label>
+                        <button type="button" class="open-admin-media-frame btn btn-primary mt-3">آپلود</button>
+
+                        <input type="hidden" class="admin-media-frame-input" name="thumbnail"
+                               value="{{$profile_avatar_id}}">
+
+                        <img class="admin-media-frame-img ml-3 mt-3"
+                             style="width: 70px" src="{{ $user->profile_avatar }}">
+
+
+
+                    </div>
+                </div>
+
 
                 <div class="admin-metabox-item metabox-close">
                     <div class="admin-metabox-item-title"><h5>نقش  کاربری</h5>
@@ -78,6 +127,6 @@
             <button class="btn-blue">بروزرسانی</button>
         </p>
     </form>
-
+        @includeIf("admin.partials.media_frame")
 </x-slot>
 </x-admin-panel-layout>

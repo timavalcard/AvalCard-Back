@@ -35,8 +35,8 @@ class NewsletterServiceProvider extends ServiceProvider
             "icon" => "fa-envelope",
             "children"=>[
                 ["name"=>"ارسال یک پیام جدید","link"=>route("admin_newsletter_add")],
-                ["name"=>"ایمیل های وارد شده","link"=>route("admin_newsletter_list")],
-                ["name"=>"ایمیل های فرستاده شده","link"=>route("admin_newsletter_list_sent")],
+                ["name"=>"ایمیل های کاربران","link"=>route("admin_newsletter_list")],
+                ["name"=>"پیام های ارسال شده","link"=>route("admin_newsletter_list_sent")],
             ],
             "permission"=>\CMS\RolePermissions\Models\Permission::PERMISSION_MANAGE_NEWSLETTER
         ]);

@@ -2,8 +2,8 @@
 <x-admin-panel-layout>
     <x-slot name="title">    لیست مقالات</x-slot>
     <x-slot name="main">
-    <form action="{{ route("admin_articles_group_action") }}" method="post">
-        @csrf
+
+
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-4">
@@ -16,7 +16,6 @@
                 </div>
             </div>
         </div>
-    <div class="admin-table-content">
         <div class="admin-page-top">
             <p class="">تعداد کل : {{ $articles_count }} عدد </p>
 
@@ -34,6 +33,10 @@
                 </form>
             </div>
         </div>
+        <form action="{{ route("admin_articles_group_action") }}" method="post">
+            @csrf
+    <div class="admin-table-content">
+
         <div class="admin-order-select-box mt-3">
             <div class="admin-order-by-box">
 

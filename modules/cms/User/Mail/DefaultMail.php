@@ -35,6 +35,6 @@ class DefaultMail extends Mailable
     public function build()
     {
         return $this->markdown('User::mails.mail')->
-            subject('هیدی لیدی');
+            subject('اول کارت');
     }
 }

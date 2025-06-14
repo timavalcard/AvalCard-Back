@@ -25,11 +25,11 @@
 
                         <a href="/">
 
-                            {{--<img data-src="{{ theme_asset("img/logo.png") }}" alt="هیدی لیدی">--}}</a>
+                            {{--<img data-src="{{ theme_asset("img/logo.png") }}" alt="اول کارت">--}}</a>
 
                     </div>
                     <p class="statusAuth">
-                        ورود به هیدی لیدی
+                        ورود به اول کارت
                         <span>
               لطفا برای ادامه شماره همراه یا ایمیل خود را وارد نمایید.
             </span>
@@ -217,9 +217,9 @@
                             </button>
                         </div>
                     </form>
-                    <p class="text-caption color-700 mt-3">با ورود به هیدی لیدی
+                    <p class="text-caption color-700 mt-3">با ورود به اول کارت
 
-                        <a class="mx-1 d-inline-block color-secondary-700" href="/terms/">شرایط هیدی لیدی</a>
+                        <a class="mx-1 d-inline-block color-secondary-700" href="/terms/">شرایط اول کارت</a>
 
                         و<a class="mx-1 d-inline-block color-secondary-700" href="/privacy/">
                             قوانین حریم خصوصی

@@ -33,18 +33,18 @@ class ShowServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->booted(function (){
+        /*$this->app->booted(function (){
             config()->set("AdminSidebar.show",[
                 "name" => 'نمایش',
                 "link" => '#',
                 "icon" => "fa-paint-brush",
                 "children"=>[
-                    ["name"=>'منو',"link"=>route("admin_add_menu")],
+                   // ["name"=>'منو',"link"=>route("admin_add_menu")],
                     ["name"=>'تنظیمات قالب',"link"=>route("admin_theme_setting_list")],
                 ],
                 "permission"=>Permission::PERMISSION_SHOW_MANAGER
 
             ]);
-        });
+        });*/
     }
 }

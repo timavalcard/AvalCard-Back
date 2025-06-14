@@ -16,7 +16,7 @@ Route::group(["namespace"=>"CMS\Article\Http\Controllers","middleware"=>"web"],f
 
 
     Route::get("/mag/{category?}/{slug}","ArticleController@index")->name("article.index2");
-    Route::get("/mag/{slug}","ArticleController@index")->name("article.index");
+    Route::domain(env("FRONT_URL"))->get("/mag/{slug}","ArticleController@index")->name("article.index");
 
 
 });

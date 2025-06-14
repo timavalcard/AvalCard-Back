@@ -47,15 +47,17 @@ class CartRepository
         }
     }
 
-    public static function add_cart_item_to_database( $product,$variation=null,$quantity=1,$group_product=null)
+    public static function add_cart_item_to_database( $product,$user,$variation=null,$quantity=1,$group_product=null)
     {
-
-        if(auth()->check()){
+        if(is_numeric($product)){
+            $product=ProductRepository::find($product);
+        }
+        if($user){
             if(ProductRepository::in_stock($product,1,$variation)) {
                     //if(!$variation) $variation=0;
                     $user_cart = [];
-                    if (auth()->user()->cart) {
-                        $user_cart = auth()->user()->cart->toArray();
+                    if ($user->cart) {
+                        $user_cart = $user->cart->toArray();
 
                     }
 
@@ -89,10 +91,10 @@ class CartRepository
 
     public static function add_cart_item_from_session_to_database()
     {
-        if (auth()->check()) {
+        if ($user) {
             $cartItem = session()->get("cart");
 
-            $userCartItem = auth()->user()->cart ? auth()->user()->cart->toArray() : null;
+            $userCartItem = $user->cart ? $user->cart->toArray() : null;
 
             if (!empty($cartItem)) {
 
@@ -112,8 +114,8 @@ class CartRepository
                         }
                     }
                 }
-                if (auth()->user()->cart) {
-                    auth()->user()->cart->delete();
+                if ($user->cart) {
+                    $user->cart->delete();
                 }
                 Cart::create([
                     "user_id" => auth()->id(),
@@ -155,11 +157,11 @@ class CartRepository
     public static function course_add_cart_item_to_database( $course,$type="course")
     {
 
-        if(auth()->check()){
+        if($user){
 
             $user_cart = [];
-            if (auth()->user()->course_cart) {
-                $user_cart = auth()->user()->course_cart->toArray();
+            if ($user->course_cart) {
+                $user_cart = $user->course_cart->toArray();
 
             }
 
@@ -179,11 +181,11 @@ class CartRepository
     }
 
 
-    public static function get_cart()
+    public static function get_cart($user=null)
     {
-        if(auth()->check()){
-            if(auth()->user()->cart){
-            return auth()->user()->cart->cart_item;
+        if($user){
+            if($user->cart){
+            return $user->cart->cart_item;
             }
         } else{
             return session()->get("cart");
@@ -192,9 +194,9 @@ class CartRepository
 
     public static function course_get_cart()
     {
-        if(auth()->check()){
-            if(auth()->user()->course_cart){
-                return auth()->user()->course_cart->cart_item;
+        if($user){
+            if($user->course_cart){
+                return $user->course_cart->cart_item;
             }
         } else{
             return session()->get("course_cart");
@@ -202,11 +204,11 @@ class CartRepository
     }
 
 
-    public static function delete_cart_item($id,$variation=null)
+    public static function delete_cart_item($id,$user,$variation=null)
     {
-        if(auth()->check()){
-            if(auth()->user()->cart) {
-                $cart = auth()->user()->cart->cart_item;
+        if($user){
+            if($user->cart) {
+                $cart = $user->cart->cart_item;
                 if(!$variation){
                     unset($cart[$id]);
                 }
@@ -216,7 +218,7 @@ class CartRepository
                 }
 
 
-                auth()->user()->cart->update([
+                $user->cart->update([
                     "cart_item" => $cart,
 
                 ]);
@@ -244,12 +246,12 @@ class CartRepository
     public static function course_delete_cart_item($id){
         $type="course";
         if($type=="Lesson") $type="lesson";
-        if(auth()->check()){
-            if(auth()->user()->course_cart) {
-                $cart = auth()->user()->course_cart->cart_item;
+        if($user){
+            if($user->course_cart) {
+                $cart = $user->course_cart->cart_item;
 
                 unset($cart[$type][$id]);
-                auth()->user()->course_cart->update([
+                $user->course_cart->update([
                     "cart_item" => $cart,
 
                 ]);
@@ -268,16 +270,16 @@ class CartRepository
     }
 
 
-    public static function increase_cart($id,$variation=null)
+    public static function increase_cart($id,$user,$variation=null)
     {
 
         if(ProductRepository::in_stock($id,1,$variation)) {
 
-            if (auth()->check()) {
-                if (auth()->user()->cart) {
-                    $cart = auth()->user()->cart->cart_item;
+            if ($user) {
+                if ($user->cart) {
+                    $cart = $user->cart->cart_item;
                     $cart[$id][$variation]["quantity"]++;
-                    auth()->user()->cart->update([
+                    $user->cart->update([
                         "cart_item" => $cart,
 
                     ]);
@@ -299,18 +301,18 @@ class CartRepository
         }
     }
 
-    public static function decrease_cart($id,$variation=null)
+    public static function decrease_cart($id,$user,$variation=null)
     {
 
-        if(auth()->check()){
-            if(auth()->user()->cart) {
-                $cart = auth()->user()->cart->cart_item;
+        if($user){
+            if($user->cart) {
+                $cart = $user->cart->cart_item;
                 if ($cart[$id][$variation]["quantity"] == 1) {
                     unset($cart[$id][$variation]);
                 } else {
                     $cart[$id][$variation]["quantity"]--;
                 }
-                auth()->user()->cart->update([
+                $user->cart->update([
                     "cart_item" => $cart,
 
                 ]);

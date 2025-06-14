@@ -50,7 +50,7 @@
                     @endforeach
                 </select></p>
             @if(request()->post_type!="article")
-                <p>
+                <p class="d-none">
                     <label for="">درصد تخفیف محصولات این دسته بندی :</label>
                     <input type="text" name="offer" placeholder="درصد تخفیف را وارد کنید" value="@if(old("offer")){{old("offer")}}@else{{ $category->offer }}@endif">
                 </p>

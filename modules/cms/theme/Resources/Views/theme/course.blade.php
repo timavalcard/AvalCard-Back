@@ -230,7 +230,7 @@
                                     </div>
                                     <div class="course-center-content-icons-item-bottom">
                                         <strong>مدرک رسمی</strong>
-                                        <p>اختصاصی هیدی لیدی</p>
+                                        <p>اختصاصی اول کارت</p>
                                     </div>
                                 </div>
                             </div>

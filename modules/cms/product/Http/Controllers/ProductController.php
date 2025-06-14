@@ -10,6 +10,7 @@ namespace CMS\Product\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use CMS\Setting\Repository\SettingRepository;
 use Illuminate\Http\Request;
 use CMS\Brand\Repositories\BrandRepository;
 use CMS\Category\Repositories\CategoryRepository;
@@ -114,12 +115,22 @@ class ProductController extends Controller
         $categories=CategoryRepository::get_by_type("product",null,request()->product_type);
         $brands=BrandRepository::get_by_type("product");
         $attributes=ProductAttrRepository::get_all_parent_attr(request()->product_type);
+        if(request()->product_type == "buy_product"){
+        return view("Product::Admin.buy_product.add",["brands"=>$brands,"categories"=>$categories,"attributes"=>$attributes]);
+
+        }
+        if(request()->product_type == "inter_payment"){
+            return view("Product::Admin.inter_payment.add",["brands"=>$brands,"categories"=>$categories,"attributes"=>$attributes]);
+
+        }
+
 
         return view("Product::Admin.product_add",["brands"=>$brands,"categories"=>$categories,"attributes"=>$attributes]);
     }
 
     public function product_add(AddProductRequest $request)
     {
+
         $this->authorize("create",Product::class);
         $slug=make_slug_for_data($request->title,$request->slug);
         $request->request->add(["slug"=>$slug]);
@@ -135,10 +146,16 @@ class ProductController extends Controller
         ProductRepository::add_attr_to_product($product,$request);
 
         PostMetaRepository::update($product,"type",$request->type);
-        PostMetaRepository::update($product,"affiliate_percent",$request->affiliate_percent);
+        PostMetaRepository::update($product,"fee_percent",$request->fee_percent);
         PostMetaRepository::update($product, "buyer_count", $request->buyer_count);
         PostMetaRepository::update($product, "guide_size", $request->guide_size);
+        PostMetaRepository::update($product, "FAQ", json_encode($request->faq));
+             PostMetaRepository::update($product, "time_to_send", $request->time_to_send ?? "");
 
+
+        if($request->send_price){
+            PostMetaRepository::update($product, "send_price", $request->send_price);
+        }
         PostMetaRepository::update($product,"gallery",serialize($request->gallery_image));
 
         if($request->product_cat){
@@ -146,6 +163,14 @@ class ProductController extends Controller
         }
         if($request->product_brand){
             ProductRepository::create_product_brand($product,$request->product_brand);
+        }
+
+
+
+        if($request->user_info){
+            $userInfoArray = $request->input('user_info', []);
+            PostMetaRepository::update($product,"user_info",json_encode($userInfoArray));
+
         }
 
 
@@ -176,13 +201,25 @@ class ProductController extends Controller
         $this->authorize("edit",Product::class);
         $brands=BrandRepository::get_by_type("product");
         $product=ProductRepository::find($id);
-        $categories=CategoryRepository::get_by_type("product",$product->product_type);
+        $categories=CategoryRepository::get_by_type("product",null,$product->product_type);
         $gallery=ProductRepository::get_gallery_image($product);
         $productCat=ProductRepository::get_product_cats($product);
         $productBrands=ProductRepository::get_product_brands($product);
         $attributes=ProductAttrRepository::get_all_parent_attr($product->product_type);
         $productVariations=ProductVariationRepository::get_product_variation($product);
         $attributes_for_variation=ProductRepository::get_use_for_variable_attribute($product);
+
+
+        if($product->product_type == "buy_product"){
+            return view("Product::Admin.buy_product.edit",["productBrands"=>$productBrands,"brands"=>$brands,"categories"=>$categories,"product"=>$product,"productCatId"=>$productCat,"gallery"=>$gallery,"attributes"=>$attributes,"productVariations"=>$productVariations,"attributes_for_variation"=>$attributes_for_variation]);
+
+        }
+
+        if($product->product_type == "inter_payment"){
+            return view("Product::Admin.inter_payment.edit",["productBrands"=>$productBrands,"brands"=>$brands,"categories"=>$categories,"product"=>$product,"productCatId"=>$productCat,"gallery"=>$gallery,"attributes"=>$attributes,"productVariations"=>$productVariations,"attributes_for_variation"=>$attributes_for_variation]);
+
+        }
+
         return view("Product::Admin.product_edit",["productBrands"=>$productBrands,"brands"=>$brands,"categories"=>$categories,"product"=>$product,"productCatId"=>$productCat,"gallery"=>$gallery,"attributes"=>$attributes,"productVariations"=>$productVariations,"attributes_for_variation"=>$attributes_for_variation]);
     }
 
@@ -200,10 +237,24 @@ class ProductController extends Controller
         ProductRepository::add_attr_to_product($product,$request);
 
         PostMetaRepository::update($product,"type",$request->type);
-        PostMetaRepository::update($product,"affiliate_percent",$request->affiliate_percent);
+        PostMetaRepository::update($product,"fee_percent",$request->fee_percent);
         PostMetaRepository::update($product,"gallery",serialize($request->gallery_image));
         PostMetaRepository::update($product, "buyer_count", $request->buyer_count);
         PostMetaRepository::update($product, "guide_size", $request->guide_size);
+        PostMetaRepository::update($product, "FAQ", json_encode($request->faq));
+
+
+            PostMetaRepository::update($product, "time_to_send", $request->time_to_send ?? "");
+
+        if($request->send_price){
+            PostMetaRepository::update($product, "send_price", $request->send_price);
+        }
+
+        if($request->user_info){
+            $userInfoArray = $request->input('user_info', []);
+            PostMetaRepository::update($product,"user_info",json_encode($userInfoArray));
+
+        }
 
         if($request->type !="variable") {
 
@@ -324,7 +375,36 @@ class ProductController extends Controller
         }
         return back();
     }
+
+    public function currency_income_setting(){
+        $this->authorize("index",Product::class);
+        $setting=SettingRepository::getOption("currency_income_setting");
+        return view("Product::Admin.currency_income_setting",compact("setting"));
+
+    }
+    public function currency_income_setting_save(Request $request){
+        $this->authorize("index",Product::class);
+        $baseFee = $request->base_fee;
+        $threshold1 = [
+            'amount' => $request->threshold_1_amount,
+            'fee' => $request->threshold_1_fee,
+        ];
+        $threshold2 = [
+            'amount' => $request->threshold_2_amount,
+            'fee' => $request->threshold_2_fee,
+        ];
+        SettingRepository::create_setting([
+            "currency_income_setting"=>[
+                'base_fee' => $baseFee,
+                'thresholds' => [
+                    $threshold1,
+                    $threshold2
+                ],
+            ]
+        ]);
+
+         return redirect()->back();
+
+    }
 }
-
-
 

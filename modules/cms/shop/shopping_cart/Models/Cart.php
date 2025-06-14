@@ -8,7 +8,7 @@ use CMS\User\Models\User;
 class Cart extends Model
 {
     protected $table = "cart";
-    protected $fillable = ["user_id","cart_item"];
+    protected $fillable = ["user_id","cart_item","coupon_id"];
     protected $casts = ["cart_item"=>"json"];
     public function user()
     {

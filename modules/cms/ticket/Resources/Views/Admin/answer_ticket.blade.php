@@ -27,17 +27,22 @@
         <div class="row mb-4">
 
             <div class="col-lg-9">
-                @foreach ($ticket->messages->sortByDesc('created_at') as $message)
-                    <div class="message-box p-3 mb-3 {{ $message->is_admin ? 'bg-light text-primary' : 'bg-white' }}">
-                        <strong>
-                            {{ $message->is_admin ? 'پاسخ ادمین:' : 'پیام کاربر:' }}
-                        </strong>
-                        <p class="mb-1">{{ $message->message }}</p>
-                        @if($message->media_id)
-                            <a target="_blank" href="{{$message->media->url}}"><img style="width: 300px;display: block;margin-top: 10px;margin-bottom: 10px;" src="{{$message->media->url}}" alt=""></a>
+                @foreach ($ticket->messages as $message)
+                    <div class="d-flex {{ $message->is_admin ? 'justify-content-end' : ' justify-content-start' }}">
+                        <div class="message-box w-50 p-3 mb-3 {{ $message->is_admin ? 'bg-light text-primary' : 'bg-white' }}">
+                            <strong>
+                                {{ $message->is_admin ? 'پاسخ ادمین:' : 'پیام کاربر:' }}
+                            </strong>
+                            <p class="mb-1">{{ $message->message }}</p>
+                            @if($message->media_id)
+                                <a target="_blank" href="{{ $message->media->url }}">
+                                    <img style="width: 300px; display: block; margin-top: 10px; margin-bottom: 10px;" src="{{ $message->media->url }}" alt="">
+                                </a>
                             @endif
-                        <small class="text-muted">تاریخ: {{ jdate($message->created_at)->format('Y/m/d H:i') }}</small>
+                            <p class="text-muted">تاریخ: {{ jdate($message->created_at)->format('Y/m/d H:i') }}</p>
+                        </div>
                     </div>
+
                 @endforeach
 
             </div>
@@ -59,6 +64,31 @@
                         <p class="col-12 form-item">
                             <textarea name="message" id="message" cols="30" rows="10"></textarea>
                         </p>
+                        <p class="col-12 form-item">
+                            <input type="file" name="file" id="fileInput" style="display: none;" onchange="showFileName(this)" />
+                            <button type="button" class="btn btn-primary" id="uploadBtn">
+                                آپلود عکس
+                            </button>
+                            <span id="file-name" class="d-block mt-2 text-secondary"></span>
+                        </p>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const uploadBtn = document.getElementById('uploadBtn');
+                                const fileInput = document.getElementById('fileInput');
+
+                                uploadBtn.addEventListener('click', function () {
+                                    fileInput.click();
+                                });
+                            });
+
+                            function showFileName(input) {
+                                const fileName = input.files.length > 0 ? input.files[0].name : '';
+                                document.getElementById('file-name').textContent = fileName;
+                            }
+                        </script>
+
+
                     </div>
 
                     <p>

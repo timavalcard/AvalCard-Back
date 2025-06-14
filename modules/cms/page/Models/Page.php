@@ -19,6 +19,10 @@ class Page extends Model
 
     public function getUrlAttribute()
     {
+        if($this->slug == "home"){
+            return env("FRONT_URL");
+        }
+
         return route("page.index",["slug"=>$this->slug]);
     }
 }

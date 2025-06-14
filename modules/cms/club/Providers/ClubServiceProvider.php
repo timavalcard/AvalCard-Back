@@ -31,7 +31,7 @@ class ClubServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->booted(function (){
+        /*$this->app->booted(function (){
         config()->set("AdminSidebar.club",[
             "name" => "باشگاه مشتریان",
             "link" => route("admin_club_index"),
@@ -42,7 +42,7 @@ class ClubServiceProvider extends ServiceProvider
             ],
             "permission"=>Permission::PERMISSION_SUPER_ADMIN
         ]);
-    });
+    });*/
     }
 
 

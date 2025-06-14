@@ -1,3 +1,8 @@
+<style>
+    button.select2-selection__clear {
+        display: none;
+    }
+</style>
 <script>
     var attr_index=0;
 
@@ -30,8 +35,17 @@
             return obj;
         });
     };
-
-
+    function initSelect2() {
+        jQuery('select[class^="variable-select_"]:not(.select2-hidden-accessible)').select2({
+            width: 'resolve',
+            placeholder: 'انتخاب کنید',
+            allowClear: true,
+            language: "fa" // اگر فارسی خواستی
+        });
+    }
+    jQuery(document).ready(function() {
+        initSelect2();
+    });
 
     jQuery(".li-for-variable-tab").click(function () {
     })
@@ -90,19 +104,29 @@
                                                     <div class="col-md-6 variable-input-box ">
                                                         <label>ارز</label>
                                                         <select  name="variation_currency[${attr_index}]">
-                                                            <option value="irr">تومان ایران (IRR)</option>
-                                                            <option value="usd">دلار آمریکا (USD)</option>
-                                                            <option value="eur">یورو (EUR)</option>
-                                                            <option value="gbp">پوند انگلیس (GBP)</option>
-                                                            <option value="jpy">ین ژاپن (JPY)</option>
-                                                            <option value="cny">یوان چین (CNY)</option>
-                                                            <option value="inr">روپیه هند (INR)</option>
-                                                        </select>
+                                                            <option value="137203" selected>دلار آمریکا</option>
+                                                            <option value="137220">دلار کانادا</option>
+                                                            <option value="137225">دلار هنگ کنگ</option>
+                                                            <option value="137219">دلار استرالیا</option>
+                                                            <option value="137206">پوند انگلیس</option>
+                                                            <option value="137204">یورو</option>
+                                                            <option value="137205">درهم امارات</option>
+                                                            <option value="520837">رئال برزیل</option>
+                                                            <option value="137209">ین ژاپن</option>
+                                                            <option value="137221">یوان چین</option>
+                                                            <option value="137224">لیر ترکیه</option>
+                                                            <option value="137227">روپیه هند</option>
+                                                            <option value="137211">دینار کویت</option>
+                                                            <option value="520841">پزوی آرژانتین</option>
+                                                            <option value="520846">هریونیا اوکراین</option>
+                                                            <option value="520835">پزوی مکزیک</option>
 
-                                                    </div>
-                                                    <div class="col-md-6 variable-input-box  d-none">
-                                                        <label>وزن (kg)</label>
-                                                        <input type="text"  name="variable_weight[${attr_index}]" placeholder="وزن را وارد کنید">
+                                                                            </select>
+
+                                                                        </div>
+                                                                        <div class="col-md-6 variable-input-box  d-none">
+                                                                            <label>وزن (kg)</label>
+                                                                            <input type="text"  name="variable_weight[${attr_index}]" placeholder="وزن را وارد کنید">
                                                     </div>
 
                                                     <div class="col-md-6 variable-input-box  d-none">
@@ -132,7 +156,7 @@
 
 
 
-                                                            <div class="manage-stock-number">
+                                                            <div class="manage-stock-number d-none">
                                                                 <p>
                                                                     <label for="">تعداد موجود در انبار.</label>
                                                                     <input type="text" name="variable_stock_number[${attr_index}]" >
@@ -166,6 +190,7 @@
                                 <option value="${v[1].id}" >${v[1].name }</option>
                             `)
                         })
+                        initSelect2();
                     })
                     attr_index++;
                     jQuery(".admin-ajax-loading").removeClass("active")
@@ -228,19 +253,29 @@
                                                     <div class="col-md-6 variable-input-box ">
                                                         <label>ارز</label>
                                                         <select  name="variation_currency[${attr_index}]">
-                                                            <option value="irr">تومان ایران (IRR)</option>
-                                                            <option value="usd">دلار آمریکا (USD)</option>
-                                                            <option value="eur">یورو (EUR)</option>
-                                                            <option value="gbp">پوند انگلیس (GBP)</option>
-                                                            <option value="jpy">ین ژاپن (JPY)</option>
-                                                            <option value="cny">یوان چین (CNY)</option>
-                                                            <option value="inr">روپیه هند (INR)</option>
-                                                        </select>
 
-                                                    </div>
-                                                    <div class="col-md-6 variable-input-box  d-none">
-                                                        <label>وزن (kg)</label>
-                                                        <input type="text"  name="variable_weight[${attr_index}]" placeholder="وزن را وارد کنید">
+                                                            <option value="137203" selected>دلار آمریکا</option>
+                                                            <option value="137220">دلار کانادا</option>
+                                                            <option value="137225">دلار هنگ کنگ</option>
+                                                            <option value="137219">دلار استرالیا</option>
+                                                            <option value="137206">پوند انگلیس</option>
+                                                            <option value="137204">یورو</option>
+                                                            <option value="137205">درهم امارات</option>
+                                                            <option value="520837">رئال برزیل</option>
+                                                            <option value="137209">ین ژاپن</option>
+                                                            <option value="137221">یوان چین</option>
+                                                            <option value="137224">لیر ترکیه</option>
+                                                            <option value="137227">روپیه هند</option>
+                                                            <option value="137211">دینار کویت</option>
+<option value="520841">پزوی آرژانتین</option>
+                                                            <option value="520846">هریونیا اوکراین</option>
+                                                            <option value="520835">پزوی مکزیک</option>
+                                                                                </select>
+
+                                                                            </div>
+                                                                            <div class="col-md-6 variable-input-box  d-none">
+                                                                                <label>وزن (kg)</label>
+                                                                                <input type="text"  name="variable_weight[${attr_index}]" placeholder="وزن را وارد کنید">
                                                     </div>
 
                                                     <div class="col-md-6 variable-input-box  d-none">
@@ -270,7 +305,7 @@
 
 
 
-                                                            <div class="manage-stock-number">
+                                                            <div class="manage-stock-number d-none">
                                                                 <p>
                                                                     <label for="">تعداد موجود در انبار.</label>
                                                                     <input type="text" name="variable_stock_number[${attr_index}]" >
@@ -308,6 +343,7 @@
                                 <option ${ v[1].id == current_combination.id ? "selected" : "" } value="${v[1].id}" >${v[1].name }</option>
                             `)
                             })
+                            initSelect2();
                         })
                         attr_index++;
                     }

@@ -41,7 +41,7 @@ class FormServiceProvider extends ServiceProvider
                 "icon" => "fa-wpforms",
                 "children"=>[
                     ["name"=>"لیست فرم","link"=>route("admin_list_forms")],
-                    ["name"=>"افزودن فرم جدید","link"=>route("admin_create_form")],
+                    //["name"=>"افزودن فرم جدید","link"=>route("admin_create_form")],
                 ],
             ]);
         });

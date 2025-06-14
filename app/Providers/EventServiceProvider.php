@@ -24,10 +24,10 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
-            AfterLoginAndRegisterAddCartToDatabaseEvent::class
+            //AfterLoginAndRegisterAddCartToDatabaseEvent::class
         ],
         Login::class=> [
-            AfterLoginAndRegisterAddCartToDatabaseEvent::class
+           // AfterLoginAndRegisterAddCartToDatabaseEvent::class
         ],
         TransactionSucceed::class=>[
             transaction_add_order_listener::class,

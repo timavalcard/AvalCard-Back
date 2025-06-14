@@ -219,10 +219,12 @@ class Product extends Model
             }
             if(!$offer_price){
                 $price =$price * $quantity;
-                return format_price_with_currencySymbol($price,$this->currency_symbol);
+                $price=convertToRial($price,$this->currency_symbol);
+                return $price;
             } else {
                 $offer_price=$offer_price * $quantity;
-                return format_price_with_currencySymbol($offer_price,$this->currency_symbol);
+                $offer_price=convertToRial($offer_price,$this->currency_symbol);
+                return $offer_price;
             }
         } else{
             return  "رایگان";
@@ -241,20 +243,17 @@ class Product extends Model
 
     public function getUrlAttribute()
     {
-        $category=$this->category;
-
-        if($category->isEmpty()){
-
-            return route("product.index2",["slug"=>$this->slug]);
-        } elseif(isset($category[0])){
-            $category=$category[0];
-            if($category->parent==0){
-                return route("product.index",["slug"=>$this->slug,"category"=>$category->slug]);
-            } else{
-                return route("product.index",["slug"=>$this->slug,"category"=>$category->slug]);
-            }
+        if($this->product_type == "gift_cart"){
+            return route("product.gift_cart",["slug"=>$this->slug]);
         }
 
+        if($this->product_type == "buy_product"){
+            return route("product.buy_product",["slug"=>$this->slug]);
+        }
+
+        if($this->product_type == "inter_payment"){
+            return route("product.inter_payment",["slug"=>$this->slug]);
+        }
     }
 
 
@@ -302,6 +301,14 @@ class Product extends Model
         return PostMetaRepository::get_post_meta_value($this,"buyer_count");
 
     }
+    public function getFeePercentAttribute(){
+        return PostMetaRepository::get_post_meta_value($this,"fee_percent");
+
+    }
+    public function getFaqAttribute(){
+        return json_decode(PostMetaRepository::get_post_meta_value($this,"FAQ"));
+
+    }
     public function getGuideSizeAttribute(){
         return PostMetaRepository::get_post_meta_value($this,"guide_size");
 
@@ -319,7 +326,24 @@ class Product extends Model
             return $meta->meta_value;
         }
     }
+    public function getTimeToSendAttribute(){
 
+        if($meta=$this->post_meta()->where("meta_key","time_to_send")->first()){
+            return $meta->meta_value;
+        }
+    }
+    public function getUserInfoAttribute(){
+
+        if($meta=$this->post_meta()->where("meta_key","user_info")->first()){
+            return json_decode($meta->meta_value);
+        }
+    }
+    public function getSendPriceAttribute(){
+
+        if($meta=$this->post_meta()->where("meta_key","send_price")->first()){
+            return $meta->meta_value;
+        }
+    }
     public function getCurrencySymbolAttribute(){
         if($this->type == $this->type_variable){
             $biggest_variation=ProductVariationRepository::get_first_currency_variation($this);

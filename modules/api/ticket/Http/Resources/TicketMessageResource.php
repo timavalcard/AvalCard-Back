@@ -31,8 +31,8 @@ class TicketMessageResource extends JsonResource
                 "alt"=>$this->media->alt ?? null,
                 "url"=>$this->media->url ?? null,
             ],
-            'updated_at' => Carbon::parse($this->updated_at)->format("d-m-Y"),
-            'created_at' => Carbon::parse($this->created_at)->format("d-m-Y"),
+            'updated_at' => IR_TimestampToDate(Carbon::parse($this->updated_at)->format("d-m-Y H:i"), 'Y/n/j H:i'),
+            'created_at' => IR_TimestampToDate(Carbon::parse($this->created_at)->format("d-m-Y H:i"), 'Y/n/j H:i'),
 
         ];
     }

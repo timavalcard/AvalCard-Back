@@ -76,7 +76,7 @@
 
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-4 d-none">
                     <input type="checkbox" name="send_free" @if(old("send_free")) checked @endif >
                     <label>ارسال رایگان؟</label>
                     <span class="font-italic d-block" style="font-size: 13px">اگر برای ارسال و حمل و نقل محصولات مبلغی را تایین کرده باشید پس از زدن این تیک هزینه ارسال برای کسانی که از این کوپن تخفیف استفاده میکنند رایگان محاسبه می شود</span>
@@ -109,7 +109,7 @@
                     <label style="font-size: 14px"> استفاده فقط برای کاربرانی که تا حالا خرید نداشته اند</label>
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-4 d-none">
                     <input type="checkbox"  name="add_auto"  @if(old("add_auto")) checked @endif>
 
                     <label style="font-size: 14px">اعمال خودکار این کوپن تخیف بر روی سفارشات

@@ -11,6 +11,7 @@ Route::group(
     //admin panel routes
     Route::group(get_information_for_admin_panel_route_group(),function (){
         Route::get("/orders","OrderController@index")->name("admin_orders");
+        Route::get("/orders/export","OrderController@exportOrders")->name("exportOrders");
         Route::post("/orders/group-action","OrderController@group_action")->name("admin_orders_group_action");
         Route::get("/orders/add","OrderController@admin_add_order_form")->name("admin_add_order");
         Route::post("/orders/add","OrderController@admin_add_order")->name("admin_add_order");

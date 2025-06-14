@@ -62,6 +62,7 @@ class UserRepository
             "name" => $data->name,
             "email" => $data->email,
             "password" => $data->password,
+            "mobile" => $data->mobile,
             "status"   =>$data->status
         ]);
     }
@@ -139,6 +140,11 @@ class UserRepository
     public static function get_users_has_meta($meta){
         return User_meta::query()->where("meta_key",$meta)->with("user")->get();
     }
+    public static function get_users_meta_equal_to($meta,$equal){
+        return User_meta::query()->where("meta_key",$meta)->where("meta_value",json_encode($equal))->orderByDesc("created_at")->with("user")->get();
+    }
+
+
     public static function get_user_by_meta_id($metaId){
         return User_meta::query()->where("id",$metaId)->with("user")->firstOrFail();
     }
@@ -147,6 +153,6 @@ class UserRepository
     }
 
     public static function find_by_mobile($email){
-        return User::query()->where("mobile",$email)->first();
+        return User::query()->where("mobile",$email)->whereNotNull("mobile_verified_at")->first();
     }
 }

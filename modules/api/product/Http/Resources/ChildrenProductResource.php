@@ -42,7 +42,7 @@ class ChildrenProductResource extends JsonResource
             'excerpt' => $this->post_excerpt,
             'content' => $this->content,
 
-            'created_at' => IR_TimestampToDate(Carbon::parse($this->created_at)->format("d-m-Y"),'Y-n-j'),
+            'created_at' => IR_TimestampToDate(Carbon::parse($this->created_at)->format("d-m-Y"),'Y/n/j'),
             'updated_at' => Carbon::parse($this->updated_at)->format("d-m-Y"),
             'author' => $author,
             'attributes' => $attributes,

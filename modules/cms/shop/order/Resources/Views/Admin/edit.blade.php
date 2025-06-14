@@ -22,7 +22,12 @@
                 </div>
             </div>
         <div class="col-12 mt-5">
-            <h5 class="mb-4">     مشخصات  سفارش :  {{ $order->id }}
+            @if($order->user)
+                <a class="btn-blue" href="{{route("tickets.add",["user_id"=>$order->user->id])}}">
+                    ارسال تیکت به خریدار
+                </a>
+            @endif
+            <h5 class="mb-4 mt-4">     مشخصات  سفارش :  {{ $order->id }}
             </h5>
             <div class="billing_information_items">
 
@@ -34,6 +39,27 @@
                         {!! $order->statusHtml !!}
                     </div>
                 </div>
+                @if($order->factor)
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            ارزش افزوده :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor["ten_percent"]?? ""}}
+                        </div>
+                    </div>
+                    @if(isset($order->factor["fee"]))
+                        <div class="billing_information_item">
+                            <div class="billing_information_item_title">
+                                کارمزد :
+                            </div>
+                            <div class="billing_information_item_value">
+                                {{ $order->factor["fee"]?? ""}}
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <div class="billing_information_item">
                     <div class="billing_information_item_title">
                         مبلغ قابل پرداخت :
@@ -44,183 +70,275 @@
                 </div>
                 <div class="billing_information_item">
                     <div class="billing_information_item_title">
+                        نوع پرداخت :
+                    </div>
+                    <div class="billing_information_item_value">
+                        {{ $order->payment_type}}
+                    </div>
+                </div>
+                @if($order->payed_at)
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            تاریخ پرداخت :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ toShamsi($order->payed_at,"Y/m/d H:i")}}
+                        </div>
+                    </div>
+                @endif
+                <div class="billing_information_item">
+                    <div class="billing_information_item_title">
+                         موبایل حساب کاربری :
+                    </div>
+                    <div class="billing_information_item_value">
+                        {{ $order->user? $order->user->mobile : "کاربر پاک شده است"}}
+                    </div>
+                </div>
+
+
+
+
+
+                {{--<div class="billing_information_item">
+                    <div class="billing_information_item_title">
                         نحوه پرداخت :
                     </div>
                     <div class="billing_information_item_value">
                         {{ __($order->payment_type)}}
                     </div>
-                </div>
+                </div>--}}
+                @if($order->factor && $order->order_type=="buy_product")
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            لینک محصول  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            <a target="_blank" href="{{ $order->factor? $order->factor["link"] : "" }}">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            نوع ارز  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["currency"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            مبلغ
+                            ({{ $order->factor? $order->factor["currency"] : "" }})
+                            :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["currency_amount"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            قیمت هر
+                            ({{ $order->factor? $order->factor["currency"] : "" }})
+                            موقع ثبت سفارش
+                            :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["unit_price"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            هزینه ارسال برحسب وزن (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? format_price_with_currencySymbol($order->factor["shipping"]) : ""}}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            قیمت محصولات (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? format_price_with_currencySymbol($order->factor["product_price"]) : ""}}
+
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            کارمزد (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ isset($order->factor["fee_amount"])? format_price_with_currencySymbol($order->factor["fee_amount"]) : ""}}
+
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            مالیات و ارزش افزوده (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ isset($order->factor["ten_percent"])? format_price_with_currencySymbol($order->factor["ten_percent"]) : ""}}
+
+                        </div>
+                    </div>
+
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            مبلغ کل (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->FormatedPrice}}
+                        </div>
+                    </div>
+
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            وزن  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["weight"]." ". $order->factor["weightUnit"]  : "" }}
+
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            تعداد  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["quantity"]  : "" }}
+
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            توضیحات  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["des"]  : "" }}
+
+                        </div>
+                    </div>
+                @endif
+
+
+
+                @if($order->factor && $order->order_type=="inter_payment")
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            نام محصول  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["product_name"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            پاسخگویی در ساعت نامناسب :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["isAvailableAtNight"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            نوع ارز  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["currency"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            مبلغ
+                            ({{ $order->factor? $order->factor["currency"] : "" }})
+                            :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["currency_amount"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            قیمت هر
+                            ({{ $order->factor? $order->factor["currency"] : "" }})
+                            موقع ثبت سفارش
+                            :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["unit_price"] : "" }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            مبلغ  (تومان)  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->FormatedPrice}}
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            توضیحات  :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->factor? $order->factor["des"]  : "" }}
+
+                        </div>
+                    </div>
+                @endif
+
+
+
+
+
+            @if(is_array($order->comment))
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            امتیاز کاربر :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->comment["rate"] }}
+                        </div>
+                    </div>
+                    <div class="billing_information_item">
+                        <div class="billing_information_item_title">
+                            متن کاربر :
+                        </div>
+                        <div class="billing_information_item_value">
+                            {{ $order->comment["text"] }}
+                        </div>
+                    </div>
+                    @endif
             </div>
 
         </div>
 
 
-            @if(!empty($order->address))
+            @if($order->order_type=="inter_payment")
                 <div class="col-12 mt-5">
-                    <h5 class="mb-4">     مشخصات ارسال بار :
-                    </h5>
+                    <h5 class="mb-4">اطلاعات وارد شده توسط کاربر</h5>
                     <div class="billing_information_items">
+                        @php($user_info = json_decode($order->factor["factor_user_info"], true))
+                        @if(is_array($user_info))
+                            @foreach($user_info as $value)
+                                <div class="billing_information_item">
+                                    <div class="billing_information_item_title">
+                                        {{ $value["label"]??"" }} :
+                                    </div>
+                                    <div class="billing_information_item_value">
+                                        {{ $value["value"]??"" }}
+                                    </div>
+                                </div>
+                            @endforeach
 
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                نام خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($order->address["billing_first_name"]) ?$order->address["billing_first_name"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                نام خانوادگی خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($order->address["billing_last_name"]) ?$order->address["billing_last_name"] :'' }}
-                            </div>
-                        </div>
-
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                ایمیل خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($order->address["billing_email"]) ?$order->address["billing_email"] :'' }}
-                            </div>
-                        </div>
-
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                تلفن :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($order->address["billing_phone"]) ?$order->address["billing_phone"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                استان :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($order->address["billing_state"]) ?$order->address["billing_state"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                شهر :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($order->address["billing_city"]) ?$order->address["billing_city"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                کد پستی :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($order->address["billing_postcode"]) ?$order->address["billing_postcode"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                آدرس :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($order->address["billing_address"]) ?$order->address["billing_address"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                تاریخ خرید :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ toShamsi($order->created_at) }}
-                            </div>
-                        </div>
+                        @endif
                     </div>
 
                 </div>
-            @elseif(!empty($user_billing))
-                <div class="col-12 mt-5">
-                    <h5 class="mb-4">     مشخصات ارسال بار :
-                    </h5>
-                    <div class="billing_information_items">
 
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                نام خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($user_billing["billing_first_name"]) ?$user_billing["billing_first_name"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                نام خانوادگی خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($user_billing["billing_last_name"]) ?$user_billing["billing_last_name"] :'' }}
-                            </div>
-                        </div>
-
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                ایمیل خریدار :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($user_billing["billing_email"]) ?$user_billing["billing_email"] :'' }}
-                            </div>
-                        </div>
-
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                تلفن :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($user_billing["billing_phone"]) ?$user_billing["billing_phone"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                استان :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($user_billing["billing_state"]) ?$user_billing["billing_state"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                شهر :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($user_billing["billing_city"]) ?$user_billing["billing_city"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                کد پستی :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{  isset($user_billing["billing_postcode"]) ?$user_billing["billing_postcode"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                آدرس :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ isset($user_billing["billing_address"]) ?$user_billing["billing_address"] :'' }}
-                            </div>
-                        </div>
-                        <div class="billing_information_item">
-                            <div class="billing_information_item_title">
-                                تاریخ خرید :
-                            </div>
-                            <div class="billing_information_item_value">
-                                {{ toShamsi($order->created_at) }}
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
             @endif
 
     @if(!empty($order_products))
@@ -264,11 +382,11 @@
             <div class="col-lg-9"><h3>     ویرایش سفارش {{ $order->id }}
                 </h3>
 
-                <p>
+                {{--<p>
                     <label>ایدی کاربر</label>
                     <input type="text" placeholder="ایدی کاربر" name="user_id"
                            value="@if(old("user_id")){{old("user_id")}}@else{{ $order->user_id }}@endif"></p>
-
+--}}
                 {{--<p>
                     <label>ایدی محصول</label>
                     <input type="text" placeholder="ایدی محصول" name="products_id"
@@ -278,49 +396,71 @@
                 <p>
                     <label>وضعیت</label>
                     <select name="status">
-                        @foreach($statuses as $status)
-                            <option @if($status==$order->status) selected @endif value="{{ $status }}">{{ __($status) }}</option>
-                        @endforeach
+                        @if($order->status == "processing")
+                            <option  selected  value="processing">{{ __("processing") }}</option>
+                            <option    value="completed">{{ __("completed") }}</option>
+                        @elseif($order->status == "completed")
+                            <option  selected  value="completed">{{ __("completed") }}</option>
+                        @elseif($order->status == "pending")
+                            <option selected value="pending">{{ __("pending") }}</option>
+                            {{--<option  value="processing">{{ __("processing") }}</option>--}}
+                          {{--  <option  value="cancelled">{{ __("cancelled") }}</option>--}}
+                            {{--<option  value="on-hold">{{ __("on-hold") }}</option>--}}
+
+                        @elseif($order->status == "on-hold")
+                            <option selected value="on-hold">{{ __("on-hold") }}</option>
+                            <option  value="pending">{{ __("pending") }}</option>
+
+                            <option  value="cancelled">{{ __("cancelled") }}</option>
+
+                        @elseif($order->status == "cancelled")
+                            <option selected value="cancelled">{{ __("cancelled") }}</option>
+                            {{--<option  value="pending">{{ __("pending") }}</option>
+                            <option  value="on-hold">{{ __("on-hold") }}</option>--}}
+                        @endif
+
                     </select>
                 </p>
-                <p>
+                @if($order->order_type == "buy_product")
+                    <p>
+                        <label>پیام برای کاربر</label>
+                        <input type="text" placeholder="پیام را وارد کنید" name="order_comment"
+                               value="@if(old("order_comment")){{old("order_comment")}}@else{{ $order->comment }}@endif">
+                    </p>
+                @endif
+                {{--<p>
                     <label>وضعیت تحویل به مشتری</label>
                     <select name="delivery_status">
                         @foreach($delivery_statuses as $status)
                             <option @if($status==$order->delivery_status) selected @endif value="{{ $status }}">{{ __($status) }}</option>
                         @endforeach
                     </select>
-                </p>
-                <p>
-                    <label>کد پیگیری از پست</label>
-                    <input type="text" placeholder="کد را وارد کنید" name="post_tracking_code"
-                           value="@if(old("post_tracking_code")){{old("post_tracking_code")}}@else{{ $order->post_tracking_code }}@endif">
-                </p>
+                </p>--}}
+                @if($order->order_type == "gift_cart" && ($order->status == "processing" || $order->status == "completed"))
+                    <p>
+                        <label>کد گیفت کارت</label>
+                        <textarea  required placeholder="کد ها را وارد کنید" name="post_tracking_code"
+                               >@if(old("post_tracking_code")){{old("post_tracking_code")}}@else{{ $order->post_tracking_code }}@endif</textarea>
+                    </p>
+                    @endif
                 <p>
                     <label>قیمت</label>
-                    <input type="text" placeholder="قیمت" name="price"
+                    <input @if($order->status == "completed" || $order->status == "processing") disabled @endif type="text" placeholder="قیمت" name="price"
                            value="@if(old("price")){{old("price")}}@else{{ $order->price }}@endif">
                 </p>
 
 
+                @if($order->order_type == "buy_product")
                 <div class="woocommerce-billing-fields__field-wrapper">
-                    <p class=" validate-required" id="billing_first_name_field">
-                        <label for="billing_first_name" class="">نام&nbsp;
-
-                        </label>
-                        <span class="woocommerce-input-wrapper">
-                                                                <input type="text" class="input-text " value="@if(isset($order->address["billing_first_name"])) {{$order->address["billing_first_name"]}} @endif" name="billing_first_name" id="billing_first_name" placeholder=""  >
-                                                            </span>
-                    </p>
                     <p class=" validate-required" id="billing_phone_field" >
-                        <label for="billing_phone" class="">تلفن همراه&nbsp;
+                        <label for="phone" class="">تلفن همراه&nbsp;
 
                         </label>
                         <span class="woocommerce-input-wrapper">
-                                                                <input type="text" class="input-text " value="@if(isset($order->address["billing_phone"])) {{$order->address["billing_phone"]}} @endif" name="billing_phone" id="billing_phone" placeholder="">
+                                                                <input type="text" class="input-text " value="@if(isset($order->factor["phone"])) {{$order->factor["phone"]}} @endif" name="phone" id="phone" placeholder="">
                                                             </span>
                     </p>
-                    <p class=" address-field validate-required" id="billing_state_field"  data-o_class=" ">
+                  {{--  <p class=" address-field validate-required" id="billing_state_field"  data-o_class=" ">
                         <label for="billing_state" class="">استان&nbsp;
 
                         </label>
@@ -329,21 +469,7 @@
                                                                <input type="text" class="input-text " value="@if(isset($order->address["billing_state"])) {{$order->address["billing_state"]}} @endif" name="billing_state" id="billing_state" placeholder=""  >
                                                             </span>
                     </p>
-                    <p class=" -last validate-required" id="billing_last_name_field" data-priority="4">
-                        <label for="billing_last_name" class="">نام خانوادگی&nbsp;
 
-                        </label>
-                        <span class="woocommerce-input-wrapper">
-                                                                <input type="text" class="input-text " value="@if(isset($order->address["billing_last_name"])) {{$order->address["billing_last_name"]}} @endif" name="billing_last_name" id="billing_last_name" placeholder="" autocomplete="family-name">
-                                                            </span>
-                    </p>
-                    <p class=" validate-email" id="billing_email_field" data-priority="5">
-                        <label for="billing_email" class="">آدرس ایمیل&nbsp;<span class="optional">(اختیاری)</span>
-                        </label>
-                        <span class="woocommerce-input-wrapper">
-                                                                <input type="email" class="input-text " value="@if(isset($order->address["billing_email"])) {{$order->address["billing_email"]}} @endif" name="billing_email" id="billing_email" placeholder=""  autocomplete="email username">
-                                                            </span>
-                    </p>
                     <p class=" address-field validate-required" id="billing_city_field" data-priority="6" data-o_class=" address-field validate-required">
                         <label for="billing_city" class="">شهر&nbsp;
 
@@ -351,20 +477,22 @@
                         <span class="woocommerce-input-wrapper">
                                                                 <input type="text" class="input-text " name="billing_city" value="@if(isset($order->address["billing_city"])) {{$order->address["billing_city"]}} @endif" id="billing_city" placeholder=""  autocomplete="address-level2">
                                                             </span>
-                    </p>
+                    </p>--}}
                     <p class=" address-field validate-required" id="billing_address_2_field" data-priority="1">
-                        <label for="billing_address" >آدرس کامل</label><span class="woocommerce-input-wrapper">
-                                                                <input type="text" class="input-text " value="@if(isset($order->address["billing_address"])) {{$order->address["billing_address"]}} @endif" name="billing_address" id="billing_address" placeholder="مثال : تهران - خیابان جمهوری - کوچه شهید ولایتی - پلاک 6 - واحد" autocomplete="address-line2" >
+                        <label for="address" >آدرس کامل</label><span class="woocommerce-input-wrapper">
+                                                                <input type="text" class="input-text " value="@if(isset($order->factor["address"])) {{$order->factor["address"]}} @endif" name="address" id="address" placeholder="مثال : تهران - خیابان جمهوری - کوچه شهید ولایتی - پلاک 6 - واحد" autocomplete="address-line2" >
                                                             </span>
                     </p>
                     <p class=" address-field validate-postcode " id="billing_postcode_field"  data-o_class=" address-field validate-postcode">
                         <label for="billing_postcode" class="">کدپستی (بدون فاصله و با اعداد انگلیسی)&nbsp;</label>
                         <span class="woocommerce-input-wrapper">
-                                                                <input type="text" class="input-text " name="billing_postcode" value="@if(isset($order->address["billing_postcode"])) {{$order->address["billing_postcode"]}} @endif" id="billing_postcode" placeholder="" autocomplete="postal-code">
+                                                                <input type="text" class="input-text " name="postal_code" value="@if(isset($order->factor["postal_code"])) {{$order->factor["postal_code"]}} @endif" id="factor" placeholder="" autocomplete="postal-code">
                                                             </span>
                     </p>
 
                 </div>
+                    @endif
+
 
             </div>
         </div>
@@ -374,7 +502,30 @@
     </form>
 
 
-    @push("admin-scripts")
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">تاریخچه سفارش</h5>
+                </div>
+                <div class="card-body">
+                    @forelse($order->log()->orderByDesc("created_at")->get() as $log)
+                        <div class="mb-3 p-3 border rounded bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong>{{ $log->user ? $log->user->name . " " . $log->user->last_name  :'نامشخص' }}</strong>
+                                <small class="text-muted">{{ jdate($log->created_at)->format('Y/m/d H:i') }}</small>
+                            </div>
+                            <div class="text-muted">
+                                {{ $log->text }}
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-muted">هیچ لاگی برای این سفارش ثبت نشده است.</p>
+                    @endforelse
+                </div>
+            </div>
+
+
+
+        @push("admin-scripts")
         <script>
             function printDiv(divName) {
 

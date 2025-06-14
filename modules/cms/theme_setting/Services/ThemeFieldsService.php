@@ -18,7 +18,7 @@ class ThemeFieldsService
                         "persian_name"=>"لوگو سایت",
                         "fields"=>function($value=null){
                             return [
-                                self::image($value["logo"],true,"logo","site_logo","عکس لوگو"),
+                                self::image($value["logo"]?? "",true,"logo","site_logo","عکس لوگو"),
                             ];
                         },
 

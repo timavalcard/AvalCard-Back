@@ -22,6 +22,8 @@ class CommonService
         $tel_comment_add = ShopRepository::getOption("tel_comment_add");
         $tel_order_add = ShopRepository::getOption("tel_order_add");
         $tel_user_add = ShopRepository::getOption("tel_user_add");
+        $tel_ticket_add = ShopRepository::getOption("tel_ticket_add");
+        $tel_authorize_add = ShopRepository::getOption("tel_authorize_add");
         $send=false;
         $msg=get_site_title()."\n";
         switch ($type) {
@@ -90,6 +92,19 @@ class CommonService
                 $msg .= '#پرسش_پاسخ' . "\n";
                 $msg .= $name . "\n";
                 $msg .= "یک سوال جدید برای این محصول اضافه شد.";
+                break;
+
+            case $type == "ticket" && $tel_ticket_add == "yes":
+                $send=true;
+                $msg .= '#تیکت_جدید' . "\n";
+                $msg .= $name . "\n";
+                $msg .= "یک تیکت جدید ارسال شد";
+                break;
+            case $type == "authorize" && $tel_authorize_add == "yes":
+                $send=true;
+                $msg .= '#درخواست_احراز_هویت' . "\n";
+
+                $msg .= "یک درخواست احراز هویت جدید ارسال شد";
                 break;
         }
 

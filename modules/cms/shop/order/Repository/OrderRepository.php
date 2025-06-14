@@ -8,6 +8,7 @@ namespace CMS\Order\Repository;
 use Illuminate\Support\Facades\DB;
 use CMS\Order\Models\Order;
 use CMS\User\Repositories\UserRepository;
+use Morilog\Jalali\Jalalian;
 
 class OrderRepository
 {
@@ -22,20 +23,84 @@ class OrderRepository
 
         return $user->orders()->findOrFail($id);
     }
-    public static function user_all_orders($user=null){
+    public static function user_all_orders($user=null,$order_type=null,$except=null){
         if(!$user) $user=auth()->user();
-        return $user->orders()->orderByDesc("created_at")->get();
+        $orders=$user->orders()->orderByDesc("created_at");
+        if($order_type){
+            $orders->where("order_type",$order_type);
+        }
+        if($except){
+            $orders->where("order_type","!=",$except);
+        }
+        return $orders->get();
     }
 
 
     public static function get_all_orders_by_status($status){
-        return Order::query()->where("status",$status)->orderByDesc("created_at")->paginate(15);
+        $orders = Order::query()->orderByDesc("created_at");
+
+        if (request()->order_type) {
+            $orders = $orders->where("order_type", request()->order_type);
+        }
+
+        if (request()->from_date) {
+            $fromDate = convertPersianToEnglishNumbers(request()->from_date);
+            $from = Jalalian::fromFormat('Y/m/d', $fromDate)->toCarbon()->startOfDay();
+            $orders = $orders->where('created_at', '>=', $from);
+        }
+
+        if (request()->to_date) {
+            $toDate = convertPersianToEnglishNumbers(request()->to_date);
+            $to = Jalalian::fromFormat('Y/m/d', $toDate)->toCarbon()->endOfDay();
+            $orders = $orders->where('created_at', '<=', $to);
+        }
+
+        if (request()->mobile) {
+            $mobile = convertPersianToEnglishNumbers(request()->mobile);
+            $orders = $orders->whereHas('user', function ($query) use ($mobile) {
+                $query->where('mobile', 'like', "%$mobile%");
+            });
+        }
+
+        return $orders->where("status",$status)->paginate(20);
     }
 
-    public static function get_all_orders()
+    public static function get_all_orders($paginate=true)
     {
-        return Order::query()->orderByDesc("created_at")->paginate(10);
+        $orders = Order::query()->orderByDesc("created_at");
+
+        if (request()->order_type) {
+            $orders = $orders->where("order_type", request()->order_type);
+        }
+
+        if (request()->from_date) {
+            $fromDate = convertPersianToEnglishNumbers(request()->from_date);
+            $from = Jalalian::fromFormat('Y/m/d', $fromDate)->toCarbon()->startOfDay();
+            $orders = $orders->where('created_at', '>=', $from);
+        }
+
+        if (request()->to_date) {
+            $toDate = convertPersianToEnglishNumbers(request()->to_date);
+            $to = Jalalian::fromFormat('Y/m/d', $toDate)->toCarbon()->endOfDay();
+            $orders = $orders->where('created_at', '<=', $to);
+        }
+
+        if (request()->mobile) {
+            $mobile = convertPersianToEnglishNumbers(request()->mobile);
+            $orders = $orders->whereHas('user', function ($query) use ($mobile) {
+                $query->where('mobile', 'like', "%$mobile%");
+            });
+        }
+        if($paginate){
+        return $orders->paginate(20);
+
+        } else{
+            return $orders->get();
+        }
     }
+
+
+
     public static function get_all_orders_count($status="")
     {
         if($status){
@@ -95,24 +160,19 @@ class OrderRepository
 
     public static function admin_edit_order(Order $order,$request)
     {
-        $address=[
-            "billing_first_name"=>$request["billing_first_name"]??"",
-            "billing_last_name"=>$request["billing_last_name"]??"",
-            "billing_email"=>$request["billing_email"]??"",
-            "billing_phone"=>$request["billing_phone"]??"",
-            "billing_state"=>$request["billing_state"]??"",
-            "billing_city"=>$request["billing_city"]??"",
-            "billing_postcode"=>$request["billing_postcode"]??"",
-            "billing_address"=>$request["billing_address"]??"",
+        $oldFactor = $order->factor ?? []; // فاکتور قبلی رو بگیر
 
-        ];
+// فقط فیلدهای موردنظر رو آپدیت کن
+        $oldFactor['phone'] = $request['phone'] ?? ($oldFactor['phone'] ?? '');
+        $oldFactor['postal_code'] = $request['postal_code'] ?? ($oldFactor['postal_code'] ?? '');
+        $oldFactor['address'] = $request['address'] ?? ($oldFactor['address'] ?? '');
         return $order->update([
-            "user_id"=>$request["user_id"],
+            "user_id"=>$request["user_id"]?? $order->user_id,
             "status"=>$request["status"],
-            "address"=>$address,
-            "post_tracking_code"=>$request["post_tracking_code"],
-            "delivery_status"=>$request["delivery_status"],
-            "price"=>$request["price"],
+            "factor"=>$oldFactor,
+            "post_tracking_code"=>$request["post_tracking_code"]??$order->post_tracking_code,
+            "delivery_status"=>$request["delivery_status"]??$order->delivery_status,
+            "price"=>$request["price"]??$order->price,
         ]);
     }
 
@@ -124,10 +184,10 @@ class OrderRepository
 
 
 
-    public static function add_order($request,$status="pending",$is_course=false)
+    public static function add_order($request,$status="pending",$order_type="order",$is_course=false)
     {
         $user=UserRepository::find($request["user_id"]);
-        $user_billing=get_user_meta(auth()->user()->id,"selected_address")->meta_value;
+        /*$user_billing=get_user_meta(auth()->user()->id,"selected_address")->meta_value;
         $address=[
             "billing_first_name"=>$user_billing["billing_first_name"]??"",
             "billing_last_name"=>$user_billing["billing_last_name"]??"",
@@ -138,14 +198,16 @@ class OrderRepository
             "billing_postcode"=>$user_billing["billing_postcode"]??"",
             "billing_address"=>$user_billing["billing_address"]??"",
 
-        ];
+        ];*/
+
         return Order::create([
             "user_id"=>$request["user_id"],
             "price"=>$request["price"],
-            "products_id"=>$request["products_id"],
-            "factor"=>$request["factor"],
+            "products_id"=>$request["products_id"]??"",
+            "factor"=>[],
             "status"=>$status,
-            "address"=>$address,
+            "address"=>[],
+            "order_type"=>$order_type,
             "delivery_status"=>Order::DELIVERY_INVOICE_TO_STOCK,
             "payment_type"=>$request["payment_type"],
             "is_course"=>$is_course,

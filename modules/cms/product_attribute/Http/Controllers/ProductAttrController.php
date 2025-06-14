@@ -38,7 +38,7 @@ class ProductAttrController extends Controller
     public function attribute_edit_form($id){
         $this->authorize("edit",Attribute::class);
         $attr=ProductAttrRepository::find($id);
-        $attrs=ProductAttrRepository::all();
+        $attrs=ProductAttrRepository::all($attr->product_type);
         return view("ProductAttr::Admin.edit_attribute",["attributes"=>$attrs,"edit_attr"=>$attr]);
     }
     public function attribute_value_edit_form($id){
@@ -67,7 +67,7 @@ class ProductAttrController extends Controller
     public function attribute_value_add_form($id){
         $this->authorize("create",Attribute::class);
         $attr=ProductAttrRepository::find($id);
-        $attr_value=ProductAttrRepository::get_children_attr($attr);
+        $attr_value=ProductAttrRepository::get_children_attr($attr,request()->name);
         return view("ProductAttr::Admin.add_attribute_value",["attribute"=>$attr,"attr_values"=>$attr_value,"parent_id"=>$id]);
     }
 

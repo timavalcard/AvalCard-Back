@@ -11,6 +11,7 @@ namespace CMS\Product\Service;
 
 use CMS\Cart\Repository\CartRepository;
 use CMS\Group_Product\Repository\GroupProductRepository;
+use CMS\Product\Models\Coupon;
 use CMS\Product\Models\Product;
 use CMS\Product\Repository\ProductRepository;
 use CMS\Product\Repository\ProductVariationRepository;
@@ -36,7 +37,7 @@ class ProductService
     }
 
 
-    public static function get_cart_products($cart)
+    public static function get_cart_products($cart,$user=null)
     {
         if($cart) {
 
@@ -45,8 +46,11 @@ class ProductService
                     $product = Product::query()->where("id", $parent_cart_product["id"])->first();
 
                     if(!$product){
-                        CartRepository::delete_cart_item($parent_cart_product["id"]);
+                        if($user){
+                        CartRepository::delete_cart_item($parent_cart_product["id"],);
                         unset($cart[$parent_cart_product["id"]]);
+
+                        }
                     } else{
                         $variation_id=$parent_cart_product["variation"];
 
@@ -111,13 +115,14 @@ class ProductService
             if($product){
                 $products=$product;
             }
-            $cart=CartRepository::get_cart();
+            $cart=CartRepository::get_cart(request()->user());
             $product_quantity=self::$product_quantity;
             $product_variation=self::$product_variation;
             $product_group=self::$product_group;
 
             if($products){
                 $total_price=0;
+                $fees=0;
                 if($cart){
                     foreach ($cart as $parent2_cart_product) {
                         foreach($parent2_cart_product as $parent_cart_product){
@@ -133,7 +138,15 @@ class ProductService
                                 if(!$product_price){
                                     $product_price=$product->regular_price;
                                 }
-                                $total_price+=$product_price * $product_quantity[$products_meta[0]->post_metaable_id][null];
+                                $p = $product_price * $product_quantity[$products_meta[0]->post_metaable_id][null];
+                                $price_in_rial = convertToRial($p, $product->currency, false);
+                                if ($product->fee_percent > 0) {
+                                    $fee = $price_in_rial * ($product->fee_percent / 100);
+                                    $total_price += $price_in_rial + $fee;
+                                    $fees+=$fee;
+                                } else {
+                                    $total_price += $price_in_rial;
+                                }
 
                             }
 
@@ -148,7 +161,15 @@ class ProductService
                                 } elseif (isset($variation->price)){
                                     $product_price=$variation->price;
                                 }
-                                $total_price+=$product_price * $parent_cart_product["quantity"];
+                                $p = $product_price * $parent_cart_product["quantity"];
+                                $price_in_rial = convertToRial($p, $variation->currency, false);
+                                if ($product->fee_percent > 0) {
+                                    $fee = $price_in_rial * ($product->fee_percent / 100);
+                                    $total_price += $price_in_rial + $fee;
+                                    $fees += $fee;
+                                } else {
+                                    $total_price += $price_in_rial;
+                                }
                             }
 
 
@@ -156,12 +177,19 @@ class ProductService
                     }
                 }
 
+                if($with_coupon && request()->user()->cart && $coupon_id = request()->user()->cart->coupon_id){
+                    $coupon=Coupon::find($coupon_id);
+                    if($coupon){
+                    $total_price=CouponService::coupon_calculate_amount($coupon,$total_price);
 
+                    }
+
+                }
                 if($format){
                     return format_price_with_currencySymbol($total_price);
 
                 } else{
-                    return  $total_price;
+                    return  ["total_price"=>$total_price,"fees"=>$fees];
                 }
             }
 
@@ -184,7 +212,7 @@ class ProductService
                         $offer_price = $products_meta[1]->meta_value;
                         $price = $products_meta[0]->meta_value;
                         $new_price = ($price - $offer_price) * $product_quantity[$products_meta[0]->post_metaable_id][null];
-                        $total_offer_price += $new_price;
+                        $total_offer_price += convertToRial($new_price,$product->currency,false);
 
                     }
                 } else{
@@ -194,13 +222,13 @@ class ProductService
                         $offer_price = $variation->offer_price;
                         $price = $variation->price;
                         $new_price = ($price - $offer_price) * $product_quantity[$variation->product_id][$variation->id];
-                        $total_offer_price += $new_price;
+                        $total_offer_price +=  $total_offer_price += convertToRial($new_price,$variation->currency,false);;
                     }
                 }
 
 
             }
-            return format_price_with_currencySymbol($total_offer_price);
+            return $total_offer_price;
         }
 
     }

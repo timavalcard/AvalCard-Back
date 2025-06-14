@@ -96,7 +96,14 @@ class User extends Authenticatable
 
         return $this->assignRole($roles);
     }
-
+    public function bank_cart()
+    {
+        return $this->hasMany(UserBankCart::class);
+    }
+    public function address()
+    {
+        return $this->hasMany(User_address::class);
+    }
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -129,6 +136,85 @@ class User extends Authenticatable
 
         return theme_asset("img/user_avatar.png") ;
     }
+    public function getNationalCodeAttribute(){
+        return UserRepository::get_meta("national_code",$this);
+    }
+    public function getAuthorizeAttribute(){
+        return UserRepository::get_meta("authorize_status",$this);
+    }
+    public function getAuthorizeDeclineReasonAttribute(){
+        return UserRepository::get_meta("authorize_decline_reason",$this);
+    }
+    public function getAuthorizeNameAttribute() {
+        return UserRepository::get_meta('authorize_name', $this);
+    }
+
+    public function getAuthorizeLastNameAttribute() {
+        return UserRepository::get_meta('authorize_last_name', $this);
+    }
+
+    public function getAuthorizeNationalCodeAttribute() {
+        return UserRepository::get_meta('authorize_national_code', $this);
+    }
+
+    public function getAuthorizePhoneAttribute() {
+        return UserRepository::get_meta('authorize_phone', $this);
+    }
+
+    public function getAuthorizeYearAttribute() {
+        return UserRepository::get_meta('authorize_year', $this);
+    }
+
+    public function getAuthorizeMonthAttribute() {
+        return UserRepository::get_meta('authorize_month', $this);
+    }
+
+    public function getAuthorizeDayAttribute() {
+        return UserRepository::get_meta('authorize_day', $this);
+    }
+
+    public function getAuthorizeCityAttribute() {
+        return UserRepository::get_meta('authorize_city', $this);
+    }
+    public function getAuthorizeStateAttribute() {
+        return UserRepository::get_meta('authorize_state', $this);
+    }
+    public function getAuthorizePostalCodeAttribute() {
+        return UserRepository::get_meta('authorize_postal_code', $this);
+    }
+
+    public function getAuthorizeStaticPhoneAttribute() {
+        return UserRepository::get_meta('authorize_static_phone', $this);
+    }
+
+    public function getAuthorizeAddressAttribute() {
+        return UserRepository::get_meta('authorize_address', $this);
+    }
+    public function getAuthorizeNationalCartImageAttribute(){
+        $profile_avatar_id=UserRepository::get_meta("authorize_national_cart_image",$this);
+        if($profile_avatar_id) return asset(store_image_link($profile_avatar_id));
+
+
+    }
+    public function getAuthorizeSelfImageAttribute(){
+        $profile_avatar_id=UserRepository::get_meta("authorize_self_image",$this);
+        if($profile_avatar_id) return asset(store_image_link($profile_avatar_id));
+
+
+    }
+
+
+    public function getMainAddressAttribute(){
+        return UserRepository::get_meta("address",$this);
+    }
+
+    public function getCityAttribute(){
+        return UserRepository::get_meta("city",$this);
+    }
+    public function getStateAttribute(){
+        return UserRepository::get_meta("state",$this);
+    }
+
     public function vipSubscription()
     {
         return $this->hasOne(VipSubscription::class);
@@ -151,12 +237,14 @@ class User extends Authenticatable
         if(isEmail($mobile)){
             return $query->where('email', $mobile)
                 ->where('status','!=',self::ACCOUNT_BAN)
-                ->where('email_verified_at', null);
+                //->where('email_verified_at', null)
+                ;
 
         }
         return $query->where('mobile', $mobile)
             ->where('status','!=',self::ACCOUNT_BAN)
-            ->where('mobile_verified_at', null);
+            //->where('mobile_verified_at', null)
+            ;
     }
 
 

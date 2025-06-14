@@ -58,7 +58,7 @@ class FormsRepository
         ]);
     }
     public static function entrances($form){
-        return $form->entrance;
+        return $form->entrance()->orderByDesc("created_at")->get();
     }
     public static function find_entrance($id){
         return FormsEntrance::find($id);

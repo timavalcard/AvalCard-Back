@@ -108,6 +108,6 @@ class CommentRepository
     }
     public static function get_newest_comments()
     {
-        return Comment::query()->limit(7)->get();
+        return Comment::query()->orderByDesc("created_at")->limit(7)->get();
     }
 }

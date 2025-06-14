@@ -622,7 +622,7 @@ a.btn.btn-sm.btn-outline-dark {
     align-items: center;
     border-bottom: solid 2px #3132340f;
 }.admin-filter-search.mb-3 input {
-     background: #F6F7F9;
+     background: #e5e5e7;
      width: 250px;
      font-size: 14px;
      border: 0;
@@ -668,8 +668,8 @@ button.btn-outline-primary {
 }
 .admin-main-content table.admin-table.final-table tbody tr:not(:first-child):hover {
     background: #F2F6F9;
+    border-radius: 10px;
 }
-
 
 
 

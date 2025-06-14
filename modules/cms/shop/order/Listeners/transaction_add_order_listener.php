@@ -54,6 +54,6 @@ class transaction_add_order_listener
             ProductService::if_product_in_stock_decrease_stock_number($cart_products, $cart);
         }
 
-        ShopService::clear_cart();
+        ShopService::clear_cart($event->transaction->transactionAble->user);
     }
 }

@@ -1,7 +1,7 @@
 @extends(config("theme.theme_mainContent_path"))
 
 @section("title")
-    فروشگاه اینترنتی هیدی لیدی
+    فروشگاه اینترنتی اول کارت
 @endsection
 
 @section("meta")

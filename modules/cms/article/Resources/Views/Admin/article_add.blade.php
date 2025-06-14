@@ -224,6 +224,7 @@
 
                             <button class="open-admin-media-frame btn-blue" type="button">عکس مقاله</button>
                             <img src="{{ asset(env("IMG_DIR","images")).'/' }}" class="admin-media-frame-img mt-3">
+                            <p class="mt-2 mb-2">سایز : 970 * 385</p>
                         </div>
                     </div>
                 </div>

@@ -27,7 +27,12 @@ class CartResource extends JsonResource
      */
     public function toArray($request)
     {
-        $product=Product::find($this["id"]);
+
+
+        $firstItem = reset($this->resource);
+
+
+        $product=Product::find($firstItem["id"]);
 
             $productObj=new ProductResource($product);
 
@@ -43,9 +48,9 @@ class CartResource extends JsonResource
 
         if($product){
             return [
-                "id"=>$this["id"],
+                "id"=>$firstItem["id"],
                 "product"=>$productObj,
-                "quantity"=>$this["quantity"],
+                "quantity"=>$firstItem["quantity"],
                 "total_price"=>$total_price,
                 "coupon_price"=>$total_price,
                 "cart_products_offer_price"=>$cart_products_offer_price,

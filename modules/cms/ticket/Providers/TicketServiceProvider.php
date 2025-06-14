@@ -42,6 +42,7 @@ class TicketServiceProvider extends ServiceProvider
                 "icon" => "fa-tickets",
                 "children"=>[
                     ["name"=>"لیست تیکت ها","link"=>route("tickets.index")],
+                    ["name"=>"ارسال تیکت جدید","link"=>route("tickets.add")],
                 ],
                 "permission"=>Permission::PERMISSION_SUPER_ADMIN
             ]);

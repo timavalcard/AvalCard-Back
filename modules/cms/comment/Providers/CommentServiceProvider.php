@@ -42,8 +42,6 @@ class CommentServiceProvider extends ServiceProvider
                 "icon" => "fa-comments",
                 "children"=>[
                     ["name"=>"لیست نظرات مقالات","link"=>route("article_comments.index")],
-                    ["name"=>"لیست نظرات محصولات","link"=>route("product_comments.index")],
-                    ["name"=>"پرسش و پاسخ محصولات","link"=>route("product_questions.index")],
 
                 ],
                 "permission"=>Permission::PERMISSION_SUPER_ADMIN

@@ -27,7 +27,9 @@ class EditUserRequest extends FormRequest
     {
         return  [
             "name" => "nullable",
-            "email" => "nullable",
+            "email" => "nullable|unique:users,email,".request()->id,
+            "mobile" => "nullable|unique:users,mobile,".request()->id,
+
             'password' => 'confirmed',
             //"role" => "required|array|min:1",
             "status" => Rule::in(User::ACCOUNT_STATUSES)

@@ -33,7 +33,7 @@ class SeoServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->booted(function (){
+       /* $this->app->booted(function (){
             config()->set("AdminSidebar.seo",[
                 "name" => "مدیریت سئو",
                 "link" => route("admin_seo"),
@@ -46,6 +46,6 @@ class SeoServiceProvider extends ServiceProvider
                   ],
                 "permission"=>Permission::PERMISSION_SEO_MANAGER
             ]);
-        });
+        });*/
     }
 }

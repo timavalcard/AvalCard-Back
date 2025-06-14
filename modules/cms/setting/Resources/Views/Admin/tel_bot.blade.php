@@ -255,7 +255,48 @@
 ">
                     </span>
                 </div>
-
+                <div class="mt-4">
+                    <label class="ml-3 mb-0">تیکت جدید:</label>
+                    <span  class="d-inline-flex align-items-center ml-2">
+                        بله
+                        <input @if(!isset($data["tel_ticket_add"]) || $data["tel_ticket_add"] == "yes"){{ "checked" }}@endif type="radio" value="yes" name="tel_ticket_add" style="
+    height: 26px;
+    width: 23px;
+    margin-right: 10px;
+    display: inline-block;
+">
+                    </span>
+                    <span class="d-inline-flex align-items-center">
+                        خیر
+                        <input @if(isset($data["tel_ticket_add"]) && $data["tel_ticket_add"] == "no"){{ "checked" }}@endif type="radio" value="no" name="tel_ticket_add" style="
+    height: 26px;
+    width: 23px;
+    margin-right: 10px;
+    display: inline-block;
+">
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <label class="ml-3 mb-0">احراز هویت جدید:</label>
+                    <span  class="d-inline-flex align-items-center ml-2">
+                        بله
+                        <input @if(!isset($data["tel_authorize_add"]) || $data["tel_authorize_add"] == "yes"){{ "checked" }}@endif type="radio" value="yes" name="tel_authorize_add" style="
+    height: 26px;
+    width: 23px;
+    margin-right: 10px;
+    display: inline-block;
+">
+                    </span>
+                    <span class="d-inline-flex align-items-center">
+                        خیر
+                        <input @if(isset($data["tel_authorize_add"]) && $data["tel_authorize_add"] == "no"){{ "checked" }}@endif type="radio" value="no" name="tel_authorize_add" style="
+    height: 26px;
+    width: 23px;
+    margin-right: 10px;
+    display: inline-block;
+">
+                    </span>
+                </div>
                 <p class="mt-4">
                 <button type="submit" class="btn-blue">ذخیره</button>
 

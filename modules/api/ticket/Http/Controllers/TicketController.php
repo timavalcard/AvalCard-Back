@@ -5,6 +5,7 @@ namespace API\Ticket\Http\Controllers;
 use API\Ticket\Http\Resources\TicketResource;
 use API\Ticket\Repositories\APITicketRepository;
 use App\Http\Controllers\Controller;
+use CMS\Common\Services\CommonService;
 use CMS\Forms\Repository\FormsRepository;
 use CMS\Media\Services\MediaFileService;
 use CMS\Ticket\Models\Ticket;
@@ -29,7 +30,7 @@ class TicketController extends Controller
             $media_id=$media->id;
         }
 
-
+        CommonService::tel_bot("ticket",request()->subject);
         $ticketMessage=TicketMessage::create([
             "ticket_id" => $ticket->id,
             "user_id" =>  request()->user()->id,
@@ -52,6 +53,7 @@ class TicketController extends Controller
             $media=MediaFileService::privateUpload($file);
             $media_id=$media->id;
         }
+        CommonService::tel_bot("ticket",$ticket->subject);
         $ticketMessage=TicketMessage::create([
             "ticket_id" => $ticket->id,
             "user_id" => request()->user()->id ?? null,
@@ -64,7 +66,7 @@ class TicketController extends Controller
 
 
     public function tickets(){
-        $tickets=Ticket::query()->where("user_id",request()->user()->id)->get();
+        $tickets=Ticket::query()->where("user_id",request()->user()->id)->orderByDesc("created_at")->get();
         if($tickets){
             return  TicketResource::collection($tickets);
         }
@@ -73,12 +75,20 @@ class TicketController extends Controller
 
     public function ticket_detail(Request $request){
 
-        $ticket=Ticket::query()->findOrFail(request()->id);
+        $ticket=Ticket::query()->where("user_id",$request->user()->id)->findOrFail(request()->id);
         if($ticket){
             return new TicketResource($ticket);
         }
 
 
+    }
+
+    public function close_ticket(Request $request){
+        $ticket=Ticket::query()->where("user_id",$request->user()->id)->findOrFail(request()->id);
+        if($ticket){
+            $ticket->status="بسته شده";
+            $ticket->save();
+        }
     }
 }
 

@@ -3,7 +3,7 @@ return [
     "MediaTypeServices" => [
         "image" => [
             "extensions" => [
-                "png", "jpg", "jpeg"
+                "png", "jpg", "jpeg","webp","svg"
             ],
             "handler" => \CMS\Media\Services\ImageFileService::class
         ],

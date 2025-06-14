@@ -28,6 +28,7 @@ class AddUserRequest extends FormRequest
         return [
             "name" => "required",
             "email" => "required|unique:users,email",
+            "mobile" => "required|unique:users,mobile",
             "password" => "required|confirmed",
             "role" => "required|array|min:1",
             "status" => Rule::in(User::ACCOUNT_STATUSES)

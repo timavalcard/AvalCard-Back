@@ -12,6 +12,8 @@ Route::group(
 //admin panel routes
 Route::group(get_information_for_admin_panel_route_group(),function (){
     Route::get("/product","ProductController@product_list")->name("admin_product_list");
+    Route::get("/currency-income/setting","ProductController@currency_income_setting")->name("admin_currency_income_setting");
+    Route::post("/currency-income/setting","ProductController@currency_income_setting_save")->name("admin_currency_income_setting");
     Route::post("/product/group_action","ProductController@group_action")->name("admin_product_group_action");
     Route::get("/product/add","ProductController@product_add_form")->name("admin_product_add");
     Route::post("/product/add","ProductController@product_add")->name("admin_product_add");

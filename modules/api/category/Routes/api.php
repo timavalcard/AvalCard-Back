@@ -11,6 +11,9 @@ Route::group(["namespace"=>"API\Category\Http\Controllers","middleware"=>"web"],
         Route::post("/category-top-articles/{slug?}","CategoryController@category_top_articles")->name("api.category_top_articles");
     });
 
+    Route::domain(env("FRONT_URL"))->get("/gift-card/{slug}","ProductController@index")->name("category.gift_cart");
+    Route::domain(env("FRONT_URL"))->get("/buy-deliver-iran/{slug}","ProductController@index")->name("category.buy_product");
+    Route::domain(env("FRONT_URL"))->get("/foreign-payment/{slug}","ProductController@index")->name("category.inter_payment");
 
 
 

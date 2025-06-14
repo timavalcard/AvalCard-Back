@@ -189,7 +189,8 @@ class ShopController extends Controller
     //admin functions
 
     public function index(){
-        $orders=Order::all();
+        $orders=Order::query()->where("order_type","!=","currency_income")->get();
+
         $order_products_id = $orders->pluck("products_id");
         $products_ids = [];
         foreach ($order_products_id as $item) {
