@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
 
-  avaldb:
+  mariadb:
     image: mariadb:11.4
     container_name: avaldb
     restart: always
@@ -12,11 +10,11 @@ services:
       MARIADB_USER: avalcd
       MARIADB_PASSWORD: "PUT PASS HERE"
     volumes:
-      - avaldb_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     networks:
       - backend-net
 
-  avalback:
+  laravel:
     build:
       context: .
       dockerfile: Dockerfile
@@ -27,7 +25,7 @@ services:
     networks:
       - backend-net
     depends_on:
-      - avaldb
+      - mariadb
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -39,7 +37,7 @@ services:
       PMA_HOST: avaldb
       PMA_PORT: 3306
     networks:
-      - app-network
+      - backend-net
 
 volumes:
   mariadb_data:
